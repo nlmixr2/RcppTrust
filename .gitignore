@@ -5,3 +5,4 @@ src/symbols.rds
 *.Rcheck/
 *.tar.gz
 .Rhistory
+README.html
