@@ -35,8 +35,10 @@ struct CObjfunEvaluator {
 };
 
 double *dup_doubles(const double *src, size_t count) {
-  double *p = static_cast<double *>(malloc(count * sizeof(double)));
-  if (p != nullptr && src != nullptr) memcpy(p, src, count * sizeof(double));
+  size_t bytes = count > 0 ? count * sizeof(double) : sizeof(double);
+  double *p = static_cast<double *>(malloc(bytes));
+  if (p == nullptr) throw std::bad_alloc();
+  if (src != nullptr && count > 0) memcpy(p, src, count * sizeof(double));
   return p;
 }
 
@@ -46,11 +48,32 @@ double *dup_vec(const arma::vec &v) { return dup_doubles(v.memptr(), v.n_elem); 
 // freshly malloc'd buffer, matching trust_result_t's documented layout.
 double *dup_rows(const std::vector<arma::vec> &rows, int n) {
   size_t count = rows.size() * static_cast<size_t>(n);
-  double *p = static_cast<double *>(malloc(count > 0 ? count * sizeof(double) : sizeof(double)));
+  size_t bytes = count > 0 ? count * sizeof(double) : sizeof(double);
+  double *p = static_cast<double *>(malloc(bytes));
+  if (p == nullptr) throw std::bad_alloc();
   for (size_t i = 0; i < rows.size(); i++)
     for (int j = 0; j < n; j++) p[i * n + j] = rows[i](j);
   return p;
 }
+
+int *dup_ints(const std::vector<int> &src) {
+  size_t count = src.size();
+  size_t bytes = count > 0 ? count * sizeof(int) : sizeof(int);
+  int *p = static_cast<int *>(malloc(bytes));
+  if (p == nullptr) throw std::bad_alloc();
+  if (count > 0) memcpy(p, src.data(), count * sizeof(int));
+  return p;
+}
+
+int *dup_steptypes(const std::vector<trust_steptype_t> &src) {
+  size_t count = src.size();
+  size_t bytes = count > 0 ? count * sizeof(int) : sizeof(int);
+  int *p = static_cast<int *>(malloc(bytes));
+  if (p == nullptr) throw std::bad_alloc();
+  for (size_t i = 0; i < count; i++) p[i] = static_cast<int>(src[i]);
+  return p;
+}
+
 
 }  // namespace
 
@@ -111,11 +134,8 @@ extern "C" int trust_solve_c(int n, const double *parinit, trust_c_objfun_t objf
       result->valtry = dup_doubles(run.valtry.data(), run.valtry.size());
       result->preddiff = dup_doubles(run.preddiff.data(), run.preddiff.size());
       result->stepnorm = dup_doubles(run.stepnorm.data(), run.stepnorm.size());
-      result->accept = static_cast<int *>(malloc(run.accept.size() * sizeof(int)));
-      result->steptype = static_cast<int *>(malloc(run.steptype.size() * sizeof(int)));
-      for (size_t i = 0; i < run.accept.size(); i++) result->accept[i] = run.accept[i];
-      for (size_t i = 0; i < run.steptype.size(); i++)
-        result->steptype[i] = static_cast<int>(run.steptype[i]);
+      result->accept = dup_ints(run.accept);
+      result->steptype = dup_steptypes(run.steptype);
       if (!opts->minimize) {
         for (int i = 0; i < result->try_len; i++) result->preddiff[i] = -result->preddiff[i];
       }
@@ -128,6 +148,10 @@ extern "C" int trust_solve_c(int n, const double *parinit, trust_c_objfun_t objf
   } catch (const TrustInfeasibleStartError &) {
     result->error = -3;
     return -3;
+  } catch (const std::bad_alloc &) {
+    trust_result_free(result);
+    result->error = -4;
+    return -4;
   } catch (...) {
     result->error = -99;
     return -99;

@@ -69,7 +69,7 @@ typedef struct {
    * from the completed loop are still valid). Negative: a hard,
    * *uncaught* failure -- -2 objfun's return value failed validation
    * (check.objfun.output()-equivalent), -3 parinit itself was
-   * infeasible, -99 an unexpected internal error. */
+   * infeasible, -4 out of memory, -99 an unexpected internal error. */
   int error;
   int converged;  /* 0/1 */
   int iterations;
