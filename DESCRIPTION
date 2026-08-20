@@ -16,7 +16,9 @@ Description: Does local optimization using two derivatives and trust
     against this package's shared library) so it can be used from
     parallel C++ code such as in 'nlmixr2est'.
 License: MIT + file LICENSE
-URL: http://www.stat.umn.edu/geyer/trust/
+URL: https://github.com/nlmixr2/RcppTrust,
+    https://nlmixr2.github.io/RcppTrust,
+    http://www.stat.umn.edu/geyer/trust/
 Encoding: UTF-8
 Depends: R (>= 4.2.0)
 Imports: Rcpp

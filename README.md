@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# RcppTrust
+# RcppTrust <img src="man/figures/logo.jpg" align="right" height="120" alt="" />
 
 <!-- badges: start -->
 <!-- badges: end -->
@@ -28,6 +28,8 @@ three ways:
 See `vignette("RcppTrust")` for what’s the same as upstream `trust`,
 what’s different, and a worked example of the C interface and the
 registration pattern.
+
+Note this package was generated with the help of AI (Claude/Gemini).
 
 ## Installation
 
