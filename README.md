@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# RcppTrust <img src="man/figures/logo.jpg" align="right" height="120" alt="" />
+# RcppTrust <img src="man/figures/logo.png" align="right" height="120" alt="" />
 
 <!-- badges: start -->
 <!-- badges: end -->
