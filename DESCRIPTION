@@ -6,7 +6,7 @@ Authors@R: c(
     person(given = c("Charles", "J."), family = "Geyer", role = "aut",
         email = "geyer@umn.edu", comment = c(ORCID = "0000-0003-1471-1703")),
     person(given = "Matthew", family = "Fidler", role = c("aut", "cre"),
-        email = "matthew.fidler@gmail.com"))
+        email = "matthew.fidler@gmail.com", comment = c(ORCID = "0000-0001-8538-6691")))
 Description: Does local optimization using two derivatives and trust
     regions. Guaranteed to converge to a local minimum of the objective
     function. This is a thread-safe C++ port of the algorithm in the
