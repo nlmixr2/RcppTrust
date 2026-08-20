@@ -99,6 +99,87 @@ A few of these are worth expanding on:
   from parallel C++ code (verified with an OpenMP stress test in this
   package's own test suite).
 
+- **Iteration counts can diverge, occasionally by a lot, on
+  ill-conditioned problems.** Both implementations always converge to
+  the same solution, but the *path* they take to get there isn't
+  guaranteed to match: a case split (typically easy-easy vs.
+  hard-easy) can tip the other way from a tiny eigendecomposition
+  difference between R's `eigen()` and LAPACK's `eig_sym()`, changing
+  which steps get accepted and how the trust region radius evolves for
+  the rest of the run. The [Speed](#speed) section below has a
+  concrete example converging to the same point in 16 iterations
+  (RcppTrust) vs. 28 (upstream).
+
+## Speed {#speed}
+
+Both implementations solve the same trust-region subproblem, so this
+is really comparing three things at once: R vs. C++ overhead per
+iteration, `stats::uniroot()` vs. `boost::math::tools::toms748_solve()`,
+and (per the note above) however many iterations each happens to take
+to converge on a given problem. `RcppTrust::trust()` still calls back
+into R for the objective function on every iteration -- exactly like
+upstream -- so none of this is about avoiding R call overhead; it's
+the trust-region bookkeeping itself (the eigendecomposition and
+root-find) that's faster in C++, and that saving grows with the number
+of parameters.
+
+```{r, eval = requireNamespace("trust", quietly = TRUE) && requireNamespace("microbenchmark", quietly = TRUE)}
+library(microbenchmark)
+
+# same Rosenbrock objfun as above: 2 parameters, ~20 iterations
+mb_small <- microbenchmark(
+  trust = trust::trust(objfun, c(3, 1), 1, 5),
+  RcppTrust = RcppTrust::trust(objfun, c(3, 1), 1, 5),
+  times = 50
+)
+print(mb_small)
+```
+
+A larger problem -- the restricted-domain log-barrier objective from
+`?trust::trust`'s second example, at `d = 30` parameters instead of 5
+-- makes the per-iteration bookkeeping cost (rather than the objective
+function itself) a bigger share of the total, and is the case behind
+the 28-vs-16-iteration example mentioned above:
+
+```{r, eval = requireNamespace("trust", quietly = TRUE) && requireNamespace("microbenchmark", quietly = TRUE)}
+d <- 30
+mu <- seq_len(d)
+barrier_objfun <- function(x) {
+  normxsq <- sum(x^2)
+  omnormxsq <- 1 - normxsq
+  if (normxsq >= 1) return(list(value = Inf))
+  f <- sum(x * mu) - log(omnormxsq)
+  g <- mu + 2 * x / omnormxsq
+  B <- 4 * outer(x, x) / omnormxsq^2 + 2 * diag(d) / omnormxsq
+  list(value = f, gradient = g, hessian = B)
+}
+
+r1 <- trust::trust(barrier_objfun, rep(0, d), 1, 100)
+r2 <- RcppTrust::trust(barrier_objfun, rep(0, d), 1, 100)
+# same solution, different number of steps to get there (see above)
+c(trust_iterations = r1$iterations, RcppTrust_iterations = r2$iterations)
+max(abs(r1$argument - r2$argument))
+
+mb_large <- microbenchmark(
+  trust = trust::trust(barrier_objfun, rep(0, d), 1, 100),
+  RcppTrust = RcppTrust::trust(barrier_objfun, rep(0, d), 1, 100),
+  times = 30
+)
+print(mb_large)
+```
+
+On this machine, `RcppTrust::trust()` comes out roughly 2x faster on
+the 2-parameter problem and roughly 4-5x faster on the 30-parameter
+one, despite taking *more* per-iteration R/C++ round trips than
+upstream (each iteration's objective-function call additionally goes
+through the internal `.trustTryEval()` wrapper described below, so
+that objfun errors are still caught exactly the way upstream's own
+`try()` catches them) -- the win comes entirely from the trust-region
+bookkeeping itself, and should be expected to grow with the number of
+parameters. It says nothing about the thread-safe C path
+(`trust_solve_c()`), which additionally removes the R round trip
+altogether; see below.
+
 ## When to use which interface
 
 - **Writing an R script, or need a drop-in replacement for

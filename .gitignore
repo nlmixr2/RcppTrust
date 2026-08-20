@@ -6,3 +6,4 @@ src/symbols.rds
 *.tar.gz
 .Rhistory
 README.html
+docs

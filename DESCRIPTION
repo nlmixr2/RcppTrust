@@ -21,7 +21,8 @@ Encoding: UTF-8
 Depends: R (>= 4.2.0)
 Imports: Rcpp
 LinkingTo: Rcpp, RcppArmadillo, BH
-Suggests: testthat (>= 3.0.0), stats, knitr, rmarkdown
+Suggests: testthat (>= 3.0.0), stats, knitr, rmarkdown, trust,
+    microbenchmark
 Config/testthat/edition: 3
 SystemRequirements: C++17
 VignetteBuilder: knitr
