@@ -1,0 +1,27 @@
+Package: RcppTrust
+Type: Package
+Title: Thread-Safe C++ Port of the 'trust' Trust Region Optimizer
+Version: 0.1.0
+Authors@R: c(
+    person(given = c("Charles", "J."), family = "Geyer", role = "aut",
+        email = "geyer@umn.edu", comment = c(ORCID = "0000-0003-1471-1703")),
+    person(given = "Matthew", family = "Fidler", role = c("aut", "cre"),
+        email = "matthew.fidler@gmail.com"))
+Description: Does local optimization using two derivatives and trust
+    regions. Guaranteed to converge to a local minimum of the objective
+    function. This is a thread-safe C++ port of the algorithm in the
+    'trust' package by Charles J. Geyer, exposed both as a drop-in R
+    function and as a C-callable, thread-safe entry point (with function
+    pointers registered for other packages to call without linking
+    against this package's shared library) so it can be used from
+    parallel C++ code such as in 'nlmixr2est'.
+License: MIT + file LICENSE
+URL: http://www.stat.umn.edu/geyer/trust/
+Encoding: UTF-8
+Depends: R (>= 4.2.0)
+Imports: Rcpp
+LinkingTo: Rcpp, RcppArmadillo, BH
+Suggests: testthat (>= 3.0.0), stats
+Config/testthat/edition: 3
+SystemRequirements: C++17
+Config/roxygen2/version: 8.1.0

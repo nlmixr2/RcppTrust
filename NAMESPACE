@@ -1,0 +1,4 @@
+useDynLib(RcppTrust, .registration = TRUE)
+importFrom(Rcpp, sourceCpp)
+export(trust)
+export(.RcppTrustPtr)
