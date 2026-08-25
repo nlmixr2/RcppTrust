@@ -237,9 +237,9 @@ in C++, and that saving grows with the number of parameters.</p>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">mb_small</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: microseconds</span></span>
-<span><span class="co">#&gt;       expr      min       lq      mean   median       uq      max neval</span></span>
-<span><span class="co">#&gt;      trust 2101.468 2135.001 2306.8496 2176.964 2226.591 4414.681    50</span></span>
-<span><span class="co">#&gt;  RcppTrust  805.652  842.330  865.6066  857.944  883.056  982.252    50</span></span></code></pre></div>
+<span><span class="co">#&gt;       expr      min       lq      mean    median       uq      max neval</span></span>
+<span><span class="co">#&gt;      trust 1294.075 1327.985 1489.3301 1355.1805 1457.338 3310.984    50</span></span>
+<span><span class="co">#&gt;  RcppTrust  567.244  590.959  613.8528  607.4785  637.508  696.686    50</span></span></code></pre></div>
 <p>A larger problem – the restricted-domain log-barrier objective from
 <code><a href="https://rdrr.io/pkg/trust/man/trust.html" class="external-link">?trust::trust</a></code>’s second example, at <code>d = 30</code>
 parameters instead of 5 – makes the per-iteration bookkeeping cost
@@ -264,9 +264,9 @@ above:</p>
 <span><span class="co"># same solution, different number of steps to get there (see above)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>trust_iterations <span class="op">=</span> <span class="va">r1</span><span class="op">$</span><span class="va">iterations</span>, RcppTrust_iterations <span class="op">=</span> <span class="va">r2</span><span class="op">$</span><span class="va">iterations</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     trust_iterations RcppTrust_iterations </span></span>
-<span><span class="co">#&gt;                   32                   16</span></span>
+<span><span class="co">#&gt;                   16                   16</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">r1</span><span class="op">$</span><span class="va">argument</span> <span class="op">-</span> <span class="va">r2</span><span class="op">$</span><span class="va">argument</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 3.989087e-12</span></span>
+<span><span class="co">#&gt; [1] 2.775558e-17</span></span>
 <span></span>
 <span><span class="va">mb_large</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span></span>
 <span>  trust <span class="op">=</span> <span class="fu">trust</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/trust/man/trust.html" class="external-link">trust</a></span><span class="op">(</span><span class="va">barrier_objfun</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">d</span><span class="op">)</span>, <span class="fl">1</span>, <span class="fl">100</span><span class="op">)</span>,</span>
@@ -275,9 +275,9 @@ above:</p>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">mb_large</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: microseconds</span></span>
-<span><span class="co">#&gt;       expr      min       lq     mean   median       uq       max neval</span></span>
-<span><span class="co">#&gt;      trust 5646.889 5715.056 6498.565 5935.316 7199.073 10844.549    30</span></span>
-<span><span class="co">#&gt;  RcppTrust  889.979  915.747 1008.032  971.667 1095.262  1176.013    30</span></span></code></pre></div>
+<span><span class="co">#&gt;       expr      min       lq      mean   median       uq      max neval</span></span>
+<span><span class="co">#&gt;      trust 1850.813 1898.133 2193.7932 1967.962 2644.083 2797.751    30</span></span>
+<span><span class="co">#&gt;  RcppTrust  660.873  711.438  811.2834  851.532  907.520  976.252    30</span></span></code></pre></div>
 <p>On this machine, <code><a href="../reference/trust.html">RcppTrust::trust()</a></code> comes out roughly 2x
 faster on the 2-parameter problem and roughly 4-5x faster on the
 30-parameter one, despite taking <em>more</em> per-iteration R/C++ round
