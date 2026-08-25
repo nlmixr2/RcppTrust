@@ -9,3 +9,5 @@
 ^pkgdown$
 ^CRAN-SUBMISSION$
 ^cran-comments\.md$
+^.vexp$
+^.habit-hooks$
