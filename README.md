@@ -5,7 +5,13 @@
 
 <!-- badges: start -->
 
+[![Codecov test
+coverage](https://codecov.io/gh/nlmixr2/n1qn1c/graph/badge.svg)](https://app.codecov.io/gh/nlmixr2/RcppTrust)
 [![R-CMD-check](https://github.com/nlmixr2/RcppTrust/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/nlmixr2/RcppTrust/actions/workflows/R-CMD-check.yaml)
+[![CRAN
+version](http://www.r-pkg.org/badges/version/RcppTrust)](https://cran.r-project.org/package=RcppTrust)
+[![CRAN
+downloads](https://cranlogs.r-pkg.org/badges/RcppTrust)](https://cran.r-project.org/package=RcppTrust)
 <!-- badges: end -->
 
 RcppTrust is a thread-safe C++ port of the trust-region optimizer in
