@@ -15,12 +15,12 @@ Source:
 
 Geyer CJ, Fidler M (2026). *RcppTrust: Thread-Safe C++ Port of the
 'trust' Trust Region Optimizer*. R package version 0.1.0,
-<https://github.com/nlmixr2/RcppTrust>.
+<https://github.com/nlmixr2/RcppTrust/>.
 
     @Manual{,
       title = {RcppTrust: Thread-Safe C++ Port of the 'trust' Trust Region Optimizer},
       author = {Charles J. Geyer and Matthew Fidler},
       year = {2026},
       note = {R package version 0.1.0},
-      url = {https://github.com/nlmixr2/RcppTrust},
+      url = {https://github.com/nlmixr2/RcppTrust/},
     }
