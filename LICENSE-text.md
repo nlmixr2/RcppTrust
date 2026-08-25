@@ -1,0 +1,7 @@
+# License
+
+    YEAR: 2005, 2008 (original R algorithm and code, trust package)
+    COPYRIGHT HOLDER: Charles J. Geyer
+
+    YEAR: 2026 (C++ port)
+    COPYRIGHT HOLDER: Matthew Fidler
