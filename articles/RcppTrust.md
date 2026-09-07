@@ -141,8 +141,8 @@ mb_small <- microbenchmark(
 print(mb_small)
 #> Unit: microseconds
 #>       expr      min       lq      mean    median       uq      max neval
-#>      trust 1315.790 1346.505 1513.3728 1371.9080 1431.432 3615.334    50
-#>  RcppTrust  585.022  606.494  632.8901  622.7625  664.459  699.822    50
+#>      trust 1306.198 1344.004 1510.6615 1366.9435 1463.942 3639.080    50
+#>  RcppTrust  600.591  619.429  641.1857  632.3685  646.980  727.169    50
 ```
 
 A larger problem – the restricted-domain log-barrier objective from
@@ -182,9 +182,9 @@ mb_large <- microbenchmark(
 )
 print(mb_large)
 #> Unit: microseconds
-#>       expr      min       lq      mean   median       uq      max neval
-#>      trust 1893.760 1956.123 2232.0896 1993.378 2691.718 2851.156    30
-#>  RcppTrust  667.144  724.218  823.3094  861.798  902.655  964.977    30
+#>       expr      min       lq     mean    median       uq      max neval
+#>      trust 1886.549 1941.351 2207.979 1982.2515 2647.008 2729.601    30
+#>  RcppTrust  685.297  747.410  829.743  857.3165  904.452  975.979    30
 ```
 
 On this machine, [`RcppTrust::trust()`](../reference/trust.md) comes out

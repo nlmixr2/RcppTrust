@@ -11,7 +11,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/nlmixr2/RcppTrust/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/nlmixr2/RcppTrust/blob/v0.1.0/DESCRIPTION)
 
 Geyer CJ, Fidler M (2026). *RcppTrust: Thread-Safe C++ Port of the
 'trust' Trust Region Optimizer*. R package version 0.1.0,
