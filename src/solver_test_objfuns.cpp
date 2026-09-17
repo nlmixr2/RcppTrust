@@ -166,3 +166,108 @@ List solver_openmp_stress_test(std::string solver, int n, int nStarts,
 #endif
   );
 }
+
+namespace {
+int minqa_fail_after(int n, const double *x, double *f, void *ud) {
+  int *left = static_cast<int *>(ud);
+  if ((*left)-- <= 0) return -1;
+  return minqa_test_rosen(n, x, f, nullptr);
+}
+int minqa_nan_x(int n, const double *x, double *f, void *) {
+  *f = -x[0] * x[0] - x[1] * x[1];  // unbounded below: iterates run off to Inf
+  (void)n;
+  return 0;
+}
+int steihaug_fail_after(int n, const double *x, double *value, double *gradient,
+                        double *hessian, void *ud) {
+  int *left = static_cast<int *>(ud);
+  if ((*left)-- <= 0) return -1;
+  return steihaug_test_rosen(n, x, value, gradient, hessian, nullptr);
+}
+int steihaug_hv_fail(int, const double *, const double *, double *, void *) {
+  return -1;
+}
+}  // namespace
+
+// Return codes of the thread-safe C entry points on invalid input and
+// failing callbacks (paths the R wrappers never reach).
+// [[Rcpp::export]]
+IntegerVector solver_c_api_edge_test() {
+  double start[2] = {-1.2, 1.0}, zero[2] = {0.0, 0.0};
+  double lower[2] = {0.0, 0.0}, upper[2] = {1e-8, 1.0};
+  minqa_result_t mr;
+  steihaug_result_t sr;
+  IntegerVector out;
+  auto push = [&](const char *nm, int code) {
+    out.push_back(code, nm);
+  };
+
+  push("newuoa_null_opts", newuoa_solve_c(2, start, minqa_test_rosen, nullptr,
+                                          nullptr, &mr));
+  minqa_result_free(&mr);
+  push("bobyqa_null_opts", bobyqa_solve_c(2, start, nullptr, nullptr,
+                                          minqa_test_rosen, nullptr, nullptr,
+                                          &mr));
+  minqa_result_free(&mr);
+  push("newuoa_zero_start", newuoa_solve_c(2, zero, minqa_test_rosen, nullptr,
+                                           nullptr, &mr));
+  push("bobyqa_negative_n", bobyqa_solve_c(-1, start, nullptr, nullptr,
+                                           minqa_test_rosen, nullptr, nullptr,
+                                           &mr));
+  push("newuoa_null_result", newuoa_solve_c(2, start, minqa_test_rosen,
+                                            nullptr, nullptr, nullptr));
+  minqa_options_t mo = minqa_options_default(2, start);
+  mo.npt = 2;
+  push("newuoa_bad_npt", newuoa_solve_c(2, start, minqa_test_rosen, nullptr,
+                                        &mo, &mr));
+  minqa_result_free(&mr);
+  push("bobyqa_bad_npt", bobyqa_solve_c(2, start, nullptr, nullptr,
+                                        minqa_test_rosen, nullptr, &mo, &mr));
+  minqa_result_free(&mr);
+  mo = minqa_options_default(2, start);
+  double tight[2] = {0.0, 0.5};
+  push("bobyqa_range", bobyqa_solve_c(2, tight, lower, upper, minqa_test_rosen,
+                                      nullptr, &mo, &mr));
+  minqa_result_free(&mr);
+  int left = 7;
+  push("newuoa_objfun_error", newuoa_solve_c(2, start, minqa_fail_after, &left,
+                                             &mo, &mr));
+  minqa_result_free(&mr);
+  left = 7;
+  push("bobyqa_objfun_error", bobyqa_solve_c(2, start, nullptr, nullptr,
+                                             minqa_fail_after, &left, &mo, &mr));
+  minqa_result_free(&mr);
+  push("newuoa_nonfinite_x", newuoa_solve_c(2, start, minqa_nan_x, nullptr,
+                                            &mo, &mr));
+  minqa_result_free(&mr);
+
+  steihaug_options_t so = steihaug_options_default();
+  push("steihaug_ok", steihaug_solve_c(2, start, steihaug_test_rosen, nullptr,
+                                       nullptr, &so, &sr));
+  steihaug_result_free(&sr);
+  push("steihaug_null_opts", steihaug_solve_c(2, start, steihaug_test_rosen,
+                                              nullptr, nullptr, nullptr, &sr));
+  steihaug_result_free(&sr);
+  so.eta = 0.5;
+  push("steihaug_bad_eta", steihaug_solve_c(2, start, steihaug_test_rosen,
+                                            nullptr, nullptr, &so, &sr));
+  steihaug_result_free(&sr);
+  so = steihaug_options_default();
+  so.abs_step_tol = NAN;
+  push("steihaug_nan_tol", steihaug_solve_c(2, start, steihaug_test_rosen,
+                                            nullptr, nullptr, &so, &sr));
+  steihaug_result_free(&sr);
+  so = steihaug_options_default();
+  left = 5;
+  push("steihaug_objfun_error", steihaug_solve_c(2, start, steihaug_fail_after,
+                                                 nullptr, &left, &so, &sr));
+  steihaug_result_free(&sr);
+  push("steihaug_hessvec_error", steihaug_solve_c(2, start, steihaug_test_rosen,
+                                                  steihaug_hv_fail, nullptr, &so,
+                                                  &sr));
+  steihaug_result_free(&sr);
+  push("steihaug_zero_n", steihaug_solve_c(0, start, steihaug_test_rosen,
+                                           nullptr, nullptr, &so, &sr));
+  steihaug_result_free(&sr);
+  return out;
+}

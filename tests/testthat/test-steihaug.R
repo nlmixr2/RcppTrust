@@ -73,3 +73,60 @@ test_that("steihaug C core gives identical results across OpenMP threads", {
     expect_gt(res$nNearOptimum, 0L)
   }
 })
+
+test_that("every Steihaug stopping rule is reachable from R", {
+  run <- function(...) steihaug(c(-1.2, 1), fr, grr, hr,
+                                control = c(list(gradTol = NULL), list(...)))
+  expect_equal(run(relGradTol = 1e-6)$message, "RelativeGradientTolerance")
+  expect_equal(run(stepTol = 1e-8)$message, "ParamTolerance")
+  expect_equal(run(relStepTol = 1e-8)$message, "RelativeParamTolerance")
+  expect_equal(run(costTol = 1e-14)$message, "CostTolerance")
+  expect_true(run(relCostTol = 1e-10)$message %in%
+                c("RelativeCostTolerance", "SolverConverged"))
+  expect_equal(run(maxCostEvals = 10)$message, "MaxCostEvals")
+  expect_equal(run(maxGradEvals = 5)$message, "MaxGradientEvals")
+  r <- run(maxit = 1000)
+  expect_equal(r$message, "SolverConverged")
+  expect_true(r$converged)
+  # General forcing exponent (not 0, 0.5 or 1) and a CG cap.
+  r <- steihaug(c(-1.2, 1), fr, grr, hr,
+                control = list(theta = 0.7, kappa = 0.1, cgMaxit = 1,
+                               maxit = 50))
+  expect_true(r$status >= 0L)
+  r <- steihaug(c(-1.2, 1), fr, grr, hr, control = list(theta = 0))
+  expect_true(r$converged)
+  # A NaN gradient is a failure, not convergence.
+  r <- steihaug(c(1, 1), fr, function(x) c(NaN, 0), hr)
+  expect_equal(r$message, "SolverFailed")
+  expect_false(r$converged)
+})
+
+test_that("steihaug() validates its inputs", {
+  expect_error(steihaug(c(1, NA), fr, grr, hr), "finite")
+  expect_error(steihaug(c(1, 1), 1, grr, hr), "fn must")
+  expect_error(steihaug(c(1, 1), fr, 1, hr), "gr must")
+  expect_error(steihaug(c(1, 1), fr, grr, 1), "hess must")
+  expect_error(steihaug(c(1, 1), fr, grr, hessvec = 1), "hessvec must")
+  expect_error(steihaug(c(1, 1), fr, grr, hr, control = 1), "list")
+  expect_error(steihaug(c(1, 1), fr, grr, hr, control = list(rinit = NA)),
+               "rinit")
+  expect_error(steihaug(c(1, 1), fr, grr, hr, control = list(gradTol = "a")),
+               "gradTol")
+  expect_error(steihaug(c(1, 1), function(x) c(1, 2), grr, hr), "single")
+  expect_error(steihaug(c(-1.2, 1), fr, grr, hessvec = function(x, v) 1),
+               "length 2")
+  expect_error(steihaug(c(-1.2, 1), fr, grr,
+                        hessvec = function(x, v) stop("hvx")),
+               "hvx")
+})
+
+test_that("Steihaug C entry point rejects bad input and reports failures", {
+  codes <- RcppTrust:::solver_c_api_edge_test()
+  expect_equal(codes[["steihaug_ok"]], 4L)
+  expect_equal(codes[["steihaug_null_opts"]], -3L)
+  expect_equal(codes[["steihaug_bad_eta"]], -3L)
+  expect_equal(codes[["steihaug_nan_tol"]], -3L)
+  expect_equal(codes[["steihaug_objfun_error"]], -1L)
+  expect_equal(codes[["steihaug_hessvec_error"]], -2L)
+  expect_equal(codes[["steihaug_zero_n"]], -3L)
+})

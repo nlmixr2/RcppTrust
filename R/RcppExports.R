@@ -13,6 +13,10 @@ solver_openmp_stress_test <- function(solver, n, nStarts, nThreadsRequested) {
     .Call(`_RcppTrust_solver_openmp_stress_test`, solver, n, nStarts, nThreadsRequested)
 }
 
+solver_c_api_edge_test <- function() {
+    .Call(`_RcppTrust_solver_c_api_edge_test`)
+}
+
 steihaug_solve_r <- function(par, fn, gr, hess, hessvec, control) {
     .Call(`_RcppTrust_steihaug_solve_r`, par, fn, gr, hess, hessvec, control)
 }

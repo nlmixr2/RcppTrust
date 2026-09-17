@@ -54,6 +54,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// solver_c_api_edge_test
+IntegerVector solver_c_api_edge_test();
+RcppExport SEXP _RcppTrust_solver_c_api_edge_test() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(solver_c_api_edge_test());
+    return rcpp_result_gen;
+END_RCPP
+}
 // steihaug_solve_r
 List steihaug_solve_r(NumericVector par, Function fn, Function gr, RObject hess, RObject hessvec, List control);
 RcppExport SEXP _RcppTrust_steihaug_solve_r(SEXP parSEXP, SEXP fnSEXP, SEXP grSEXP, SEXP hessSEXP, SEXP hessvecSEXP, SEXP controlSEXP) {
@@ -181,6 +191,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppTrust_minqa_bobyqa_r", (DL_FUNC) &_RcppTrust_minqa_bobyqa_r, 5},
     {"_RcppTrust_minqa_newuoa_r", (DL_FUNC) &_RcppTrust_minqa_newuoa_r, 3},
     {"_RcppTrust_solver_openmp_stress_test", (DL_FUNC) &_RcppTrust_solver_openmp_stress_test, 4},
+    {"_RcppTrust_solver_c_api_edge_test", (DL_FUNC) &_RcppTrust_solver_c_api_edge_test, 0},
     {"_RcppTrust_steihaug_solve_r", (DL_FUNC) &_RcppTrust_steihaug_solve_r, 6},
     {"_RcppTrust_trust_solve_r", (DL_FUNC) &_RcppTrust_trust_solve_r, 11},
     {"_RcppTrust_trust_check_numeric_output_test", (DL_FUNC) &_RcppTrust_trust_check_numeric_output_test, 5},
