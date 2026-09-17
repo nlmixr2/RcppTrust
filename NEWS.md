@@ -22,3 +22,8 @@
   entry points and their result-free functions.
 
 * New vignette `vignette("trust-region-methods")`.
+
+
+# RcppTrust 0.1.0
+
+* Original release of RcppTRust only containing the port of trust::trust()
