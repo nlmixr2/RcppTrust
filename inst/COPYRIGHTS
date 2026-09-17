@@ -1,0 +1,87 @@
+RcppTrust is distributed under the GNU General Public License, version 2
+(GPL-2), because its BOBYQA/NEWUOA ports and R wrappers derive from the
+GPL-2 package 'minqa'. It includes code ported from the following sources,
+whose notices are retained below.
+
+trust (src/trust_*, R/trust.R)
+  Ported from the R package 'trust' by Charles J. Geyer, distributed under
+  the following permissive (X11-style) license:
+
+    COPYRIGHT AND PERMISSION NOTICE
+
+    Copyright (c) 2005 Charles J. Geyer
+    Copyright (c) 2026 Matthew Fidler
+
+    All rights reserved.
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, and/or sell copies of the
+    Software, and to permit persons to whom the Software is furnished to do so,
+    provided that the above copyright notice(s) and this permission notice appear
+    in all copies of the Software and that both the above copyright notice(s) and
+    this permission notice appear in supporting documentation.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS.
+    IN NO EVENT SHALL THE COPYRIGHT HOLDER OR HOLDERS INCLUDED IN THIS NOTICE
+    BE LIABLE FOR ANY CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES,
+    OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+    WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
+    ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+    Except as contained in this notice, the name of a copyright holder shall
+    not be used in advertising or otherwise to promote the sale, use or other
+    dealings in this Software without prior written authorization of the copyright
+    holder.
+
+Steihaug trust region (src/steihaug_core.cpp, inst/include/steihaug_types.h)
+  Ported from the Rust crate 'basin' (https://github.com/jolars/basin),
+  commit 86cc0d6: solver/trust_region.rs, solver/trust_region/steihaug.rs
+  and the executor/convergence machinery. basin is copyright its
+  contributors and licensed under either of the Apache License, Version 2.0
+  or the MIT license, at your option; used here under the MIT license:
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the
+    "Software"), to deal in the Software without restriction, including
+    without limitation the rights to use, copy, modify, merge, publish,
+    distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so, subject to
+    the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+    OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+    CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+BOBYQA and NEWUOA (src/minqa_*.cpp, R/minqa.R, inst/include/minqa_types.h)
+  Ported from M. J. D. Powell's original Fortran 77 BOBYQA (2009) and
+  NEWUOA (2004) code, which Powell released without a license. The
+  unmodified originals are archived at
+    https://github.com/libprima/prima/tree/main/fortran/original/bobyqa
+    https://github.com/libprima/prima/tree/main/fortran/original/newuoa
+  (see also https://www.zhangzk.net/software.html).
+
+  The C++ is translated from the versions of that Fortran modified and
+  distributed in the R package 'minqa' 1.2.8 (copyright Douglas Bates,
+  Katharine M. Mullen, John C. Nash, Ravi Varadhan; GPL-2), keeping its
+  error-code and printing edits, and R/minqa.R and the print glue in
+  src/minqa_common.h follow minqa's R/minqa.R and src/minqa.cpp.
+
+  References:
+    M. J. D. Powell (2006), "The NEWUOA software for unconstrained
+    optimization without derivatives", in G. Di Pillo and M. Roma (eds),
+    Large-Scale Nonlinear Optimization, Springer, 255-297.
+    doi:10.1007/0-387-30065-1_16
+    M. J. D. Powell (2009), "The BOBYQA algorithm for bound constrained
+    optimization without derivatives", Report DAMTP 2009/NA06, Centre for
+    Mathematical Sciences, University of Cambridge.

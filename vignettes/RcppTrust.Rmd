@@ -21,6 +21,12 @@ package actually needs to know: what carries over unchanged, what's
 new, and how to call the new thread-safe C interface from your own
 package.
 
+The package also includes three more trust-region optimizers built the
+same way, each with an R function and a thread-safe C core: `steihaug()`
+(truncated-CG trust region, ported from the Rust crate basin), and
+`bobyqa()` and `newuoa()` (Powell's derivative-free methods, ported
+from `minqa`). They are covered in `vignette("trust-region-methods")`.
+
 ## Similarities: what carries over unchanged
 
 `RcppTrust::trust()` is a drop-in replacement for `trust::trust()`. It
@@ -283,7 +289,10 @@ reproduces in a single self-contained file for demonstration.
    }
    ```
 
-   After that, `trust_solve_c_ptr` and `trust_result_free_ptr` are
+   After that, `trust_solve_c_ptr` and `trust_result_free_ptr` (and,
+   for the other optimizers, `steihaug_solve_c_ptr`,
+   `bobyqa_solve_c_ptr`, `newuoa_solve_c_ptr` and their `*_free_ptr`
+   partners; see `vignette("trust-region-methods")`) are
    live function pointers with the same signatures as
    `trust_solve_c()`/`trust_result_free()`, usable anywhere in your
    package's C++ -- including inside an OpenMP loop fitting many
