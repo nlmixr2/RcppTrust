@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Thread-Safe C++ Port of the trust Trust Region Optimizer • RcppTrust</title>
+<title>Thread-Safe C++ Trust Region Optimizers • RcppTrust</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
@@ -15,9 +15,9 @@
 <link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
-<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Thread-Safe C++ Port of the trust Trust Region Optimizer">
-<meta name="description" content="Does local optimization using two derivatives and trust regions. Guaranteed to converge to a local minimum of the objective function. This is a thread-safe C++ port of the algorithm in the trust package by Charles J. Geyer, exposed both as a drop-in R function and as a C-callable, thread-safe entry point (with function pointers registered for other packages to call without linking against this packages shared library) so it can be used from parallel C++ code such as in nlmixr2est'.">
-<meta property="og:description" content="Does local optimization using two derivatives and trust regions. Guaranteed to converge to a local minimum of the objective function. This is a thread-safe C++ port of the algorithm in the trust package by Charles J. Geyer, exposed both as a drop-in R function and as a C-callable, thread-safe entry point (with function pointers registered for other packages to call without linking against this packages shared library) so it can be used from parallel C++ code such as in nlmixr2est'.">
+<script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Thread-Safe C++ Trust Region Optimizers">
+<meta name="description" content="Thread-safe C++ trust region optimizers, each exposed both as an R function and as a C-callable entry point (with function pointers registered for other packages to call without linking against this packages shared library) so they can be used from parallel C++ code such as in nlmixr2est. Includes a port of the two-derivative trust region algorithm in the trust package by Charles J. Geyer; a port of the Steihaug truncated conjugate-gradient trust region method from the basin Rust crate (Steihaug (1983) &lt;doi:10.1137/0720042&gt;); and ports of M. J. D. Powells derivative-free BOBYQA (Powell (2009), Report DAMTP 2009/NA06) and NEWUOA (Powell (2006) &lt;doi:10.1007/0-387-30065-1_16&gt;) Fortran 77 code &lt;https://github.com/libprima/prima/tree/main/fortran/original&gt;, as modified and distributed in the minqa package, whose R interface is reproduced.">
+<meta property="og:description" content="Thread-safe C++ trust region optimizers, each exposed both as an R function and as a C-callable entry point (with function pointers registered for other packages to call without linking against this packages shared library) so they can be used from parallel C++ code such as in nlmixr2est. Includes a port of the two-derivative trust region algorithm in the trust package by Charles J. Geyer; a port of the Steihaug truncated conjugate-gradient trust region method from the basin Rust crate (Steihaug (1983) &lt;doi:10.1137/0720042&gt;); and ports of M. J. D. Powells derivative-free BOBYQA (Powell (2009), Report DAMTP 2009/NA06) and NEWUOA (Powell (2006) &lt;doi:10.1007/0-387-30065-1_16&gt;) Fortran 77 code &lt;https://github.com/libprima/prima/tree/main/fortran/original&gt;, as modified and distributed in the minqa package, whose R interface is reproduced.">
 <meta property="og:image" content="/logo.png">
 </head>
 <body>
@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="index.html">RcppTrust</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,6 +39,13 @@
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="articles/RcppTrust.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="articles/trust-region-methods.html">More Trust-Region Methods: Steihaug, BOBYQA and NEWUOA</a></li>
+  </ul>
+</li>
+<li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
@@ -67,6 +74,45 @@
 <strong><code>trust_solve_c()</code></strong>, a thread-safe C entry point (a C objective function pointer plus a small options struct, no R API calls) safe to call from parallel C++ code such as an OpenMP loop.</li>
 <li>A header-only, positionally-indexed function-pointer table (<code>inst/include/RcppTrust.h</code>), so another package can call <code>trust_solve_c()</code> without linking against this package’s shared library – the same pattern <code>rxode2</code>/<code>n1qn1</code>/<code>lbfgsb3c</code> use across the nlmixr2 ecosystem.</li>
 </ul>
+<p>It also includes three more trust-region optimizers built the same way, each with an R function and a thread-safe C entry point:</p>
+<table class="table">
+<colgroup>
+<col width="5%">
+<col width="64%">
+<col width="19%">
+<col width="9%">
+</colgroup>
+<thead><tr>
+<th>R function</th>
+<th>Ported from</th>
+<th>Needs</th>
+<th>C entry point</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code><a href="reference/steihaug.html">steihaug()</a></code></td>
+<td>
+<a href="https://github.com/jolars/basin" class="external-link">basin</a> (Rust)</td>
+<td>gradient + Hessian or Hessian-vector products</td>
+<td><code>steihaug_solve_c()</code></td>
+</tr>
+<tr>
+<td><code><a href="reference/bobyqa.html">bobyqa()</a></code></td>
+<td>Powell’s <a href="https://github.com/libprima/prima/tree/main/fortran/original/bobyqa" class="external-link">BOBYQA Fortran</a>, via <a href="https://cran.r-project.org/package=minqa" class="external-link"><code>minqa</code></a>
+</td>
+<td>function values only; box bounds</td>
+<td><code>bobyqa_solve_c()</code></td>
+</tr>
+<tr>
+<td><code><a href="reference/newuoa.html">newuoa()</a></code></td>
+<td>Powell’s <a href="https://github.com/libprima/prima/tree/main/fortran/original/newuoa" class="external-link">NEWUOA Fortran</a>, via <a href="https://cran.r-project.org/package=minqa" class="external-link"><code>minqa</code></a>
+</td>
+<td>function values only</td>
+<td><code>newuoa_solve_c()</code></td>
+</tr>
+</tbody>
+</table>
+<p><code><a href="reference/bobyqa.html">bobyqa()</a></code>/<code><a href="reference/newuoa.html">newuoa()</a></code> are drop-in replacements for their <code>minqa</code> counterparts and give bitwise-identical results; <code><a href="reference/steihaug.html">steihaug()</a></code> reproduces basin’s iterates bit for bit. See <code><a href="articles/trust-region-methods.html">vignette("trust-region-methods")</a></code>.</p>
 <p>See <code><a href="articles/RcppTrust.html">vignette("RcppTrust")</a></code> for what’s the same as upstream <code>trust</code>, what’s different, and a worked example of the C interface and the registration pattern.</p>
 <p>Note this package was generated with the help of AI (Claude/Gemini).</p>
 <div class="section level2">
@@ -115,7 +161,10 @@
 </h2>
 <ul>
 <li>Charles J. Geyer – original algorithm and R implementation (<code>trust</code>)</li>
-<li>Matthew Fidler – thread-safe C++ port (<code>RcppTrust</code>)</li>
+<li>M. J. D. Powell – BOBYQA and NEWUOA algorithms and original Fortran 77 code</li>
+<li>Douglas Bates, Katharine M. Mullen, John C. Nash, Ravi Varadhan – <code>minqa</code>, the R distribution of Powell’s code this port follows</li>
+<li>Johan Larsson and basin contributors – basin’s Steihaug trust-region implementation</li>
+<li>Matthew Fidler – thread-safe C++ ports (<code>RcppTrust</code>)</li>
 </ul>
 </div>
 </div>
@@ -130,9 +179,7 @@
 <div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li>
-<a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a>
-</li>
+<li><a href="https://www.r-project.org/Licenses/GPL-2" class="external-link">GPL-2</a></li>
 </ul>
 </div>
 
@@ -147,8 +194,10 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Charles J. Geyer <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0003-1471-1703" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
+<li>Charles J. Geyer <br><small class="roles"> Author, copyright holder </small> <a href="https://orcid.org/0000-0003-1471-1703" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
 <li>Matthew Fidler <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0001-8538-6691" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
+<li>Michael J. D. Powell <br><small class="roles"> Author </small>   </li>
+<li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
 
@@ -167,7 +216,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Charles J. Geyer, Matthew Fidler.</p>
+  <p>Developed by Charles J. Geyer, Matthew Fidler, Michael J. D. Powell.</p>
 </div>
 
 <div class="pkgdown-footer-right">

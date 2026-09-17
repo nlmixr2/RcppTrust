@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">RcppTrust</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -17,6 +17,11 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/RcppTrust.html">Get started</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/trust-region-methods.html">More Trust-Region Methods: Steihaug, BOBYQA and NEWUOA</a></li>
+  </ul></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/nlmixr2/RcppTrust/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -42,10 +47,38 @@
 
       <dl><dt>
 
+          <code><a href="bobyqa.html">bobyqa()</a></code>
+
+        </dt>
+        <dd>Nonlinear optimization with box constraints (BOBYQA)</dd>
+
+        <dt>
+
           <code><a href="dot-RcppTrustPtr.html">.RcppTrustPtr()</a></code>
 
         </dt>
         <dd>Positionally-indexed function pointer table for downstream packages</dd>
+
+        <dt>
+
+          <code><a href="newuoa.html">newuoa()</a></code>
+
+        </dt>
+        <dd>Unconstrained derivative-free optimization (NEWUOA)</dd>
+
+        <dt>
+
+          <code><a href="print.minqa.html">print(<i>&lt;minqa&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Print method for minqa objects</dd>
+
+        <dt>
+
+          <code><a href="steihaug.html">steihaug()</a></code>
+
+        </dt>
+        <dd>Steihaug truncated-CG trust-region Newton minimization</dd>
 
         <dt>
 
@@ -58,7 +91,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Charles J. Geyer, Matthew Fidler.</p>
+  <p>Developed by Charles J. Geyer, Matthew Fidler, Michael J. D. Powell.</p>
 </div>
 
 <div class="pkgdown-footer-right">

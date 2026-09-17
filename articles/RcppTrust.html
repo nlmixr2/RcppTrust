@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">RcppTrust</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,13 @@
       <ul class="navbar-nav me-auto">
 <li class="active nav-item"><a class="nav-link" href="../articles/RcppTrust.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="../articles/trust-region-methods.html">More Trust-Region Methods: Steihaug, BOBYQA and NEWUOA</a></li>
+  </ul>
+</li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
 <li class="nav-item"><form class="form-inline" role="search">
@@ -59,7 +66,7 @@
 Fidler</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/nlmixr2/RcppTrust/blob/v0.1.0/vignettes/RcppTrust.Rmd" class="external-link"><code>vignettes/RcppTrust.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/nlmixr2/RcppTrust/blob/main/vignettes/RcppTrust.Rmd" class="external-link"><code>vignettes/RcppTrust.Rmd</code></a></small>
       <div class="d-none name"><code>RcppTrust.Rmd</code></div>
     </div>
 
@@ -73,6 +80,12 @@ algorithm – see Geyer’s original paper/vignette, or Nocedal and Wright
 covers what a user of either package actually needs to know: what
 carries over unchanged, what’s new, and how to call the new thread-safe
 C interface from your own package.</p>
+<p>The package also includes three more trust-region optimizers built
+the same way, each with an R function and a thread-safe C core:
+<code><a href="../reference/steihaug.html">steihaug()</a></code> (truncated-CG trust region, ported from the Rust
+crate basin), and <code><a href="../reference/bobyqa.html">bobyqa()</a></code> and <code><a href="../reference/newuoa.html">newuoa()</a></code>
+(Powell’s derivative-free methods, ported from <code>minqa</code>). They
+are covered in <code><a href="../articles/trust-region-methods.html">vignette("trust-region-methods")</a></code>.</p>
 <div class="section level2">
 <h2 id="similarities-what-carries-over-unchanged">Similarities: what carries over unchanged<a class="anchor" aria-label="anchor" href="#similarities-what-carries-over-unchanged"></a>
 </h2>
@@ -237,9 +250,9 @@ in C++, and that saving grows with the number of parameters.</p>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">mb_small</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: microseconds</span></span>
-<span><span class="co">#&gt;       expr      min       lq      mean    median       uq      max neval</span></span>
-<span><span class="co">#&gt;      trust 1306.198 1344.004 1510.6615 1366.9435 1463.942 3639.080    50</span></span>
-<span><span class="co">#&gt;  RcppTrust  600.591  619.429  641.1857  632.3685  646.980  727.169    50</span></span></code></pre></div>
+<span><span class="co">#&gt;       expr      min       lq      mean   median       uq      max neval</span></span>
+<span><span class="co">#&gt;      trust 1313.688 1344.723 1547.2143 1372.976 1467.226 3613.313    50</span></span>
+<span><span class="co">#&gt;  RcppTrust  589.188  610.941  639.2165  626.744  663.840  746.492    50</span></span></code></pre></div>
 <p>A larger problem – the restricted-domain log-barrier objective from
 <code><a href="https://rdrr.io/pkg/trust/man/trust.html" class="external-link">?trust::trust</a></code>’s second example, at <code>d = 30</code>
 parameters instead of 5 – makes the per-iteration bookkeeping cost
@@ -275,9 +288,9 @@ above:</p>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">mb_large</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: microseconds</span></span>
-<span><span class="co">#&gt;       expr      min       lq     mean    median       uq      max neval</span></span>
-<span><span class="co">#&gt;      trust 1886.549 1941.351 2207.979 1982.2515 2647.008 2729.601    30</span></span>
-<span><span class="co">#&gt;  RcppTrust  685.297  747.410  829.743  857.3165  904.452  975.979    30</span></span></code></pre></div>
+<span><span class="co">#&gt;       expr      min       lq      mean   median       uq      max neval</span></span>
+<span><span class="co">#&gt;      trust 1896.997 1951.988 2246.5193 2013.034 2676.618 2752.671    30</span></span>
+<span><span class="co">#&gt;  RcppTrust  683.969  744.890  833.4008  881.799  920.412  990.326    30</span></span></code></pre></div>
 <p>On this machine, <code><a href="../reference/trust.html">RcppTrust::trust()</a></code> comes out roughly 2x
 faster on the 2-parameter problem and roughly 4-5x faster on the
 30-parameter one, despite taking <em>more</em> per-iteration R/C++ round
@@ -401,8 +414,11 @@ once:</p>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/CallExternal.html" class="external-link">.Call</a></span><span class="op">(</span><span class="va">`_mypkg_iniRcppTrustPtrs`</span>, <span class="fu">RcppTrust</span><span class="fu">:::</span><span class="fu"><a href="../reference/dot-RcppTrustPtr.html">.RcppTrustPtr</a></span><span class="op">(</span><span class="op">)</span>, PACKAGE <span class="op">=</span> <span class="st">"mypkg"</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 <p>After that, <code>trust_solve_c_ptr</code> and
-<code>trust_result_free_ptr</code> are live function pointers with the
-same signatures as
+<code>trust_result_free_ptr</code> (and, for the other optimizers,
+<code>steihaug_solve_c_ptr</code>, <code>bobyqa_solve_c_ptr</code>,
+<code>newuoa_solve_c_ptr</code> and their <code>*_free_ptr</code>
+partners; see <code><a href="../articles/trust-region-methods.html">vignette("trust-region-methods")</a></code>) are live
+function pointers with the same signatures as
 <code>trust_solve_c()</code>/<code>trust_result_free()</code>, usable
 anywhere in your package’s C++ – including inside an OpenMP loop fitting
 many subjects’ problems in parallel:</p>
@@ -497,7 +513,7 @@ pointer table it publishes.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Charles J. Geyer, Matthew Fidler.</p>
+  <p>Developed by Charles J. Geyer, Matthew Fidler, Michael J. D. Powell.</p>
 </div>
 
 <div class="pkgdown-footer-right">

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">RcppTrust</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -17,6 +17,11 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="articles/RcppTrust.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="articles/trust-region-methods.html">More Trust-Region Methods: Steihaug, BOBYQA and NEWUOA</a></li>
+  </ul></li>
+<li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/nlmixr2/RcppTrust/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -34,28 +39,52 @@
       <h2>Authors</h2>
 
       <ul class="list-unstyled"><li>
-          <p><strong>Charles J. Geyer</strong>. Author. <a href="https://orcid.org/0000-0003-1471-1703" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>
+          <p><strong>Charles J. Geyer</strong>. Author, copyright holder. <a href="https://orcid.org/0000-0003-1471-1703" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>
           </p>
         </li>
         <li>
           <p><strong>Matthew Fidler</strong>. Author, maintainer. <a href="https://orcid.org/0000-0001-8538-6691" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>
           </p>
         </li>
+        <li>
+          <p><strong>Michael J. D. Powell</strong>. Author.
+          <br><small>BOBYQA and NEWUOA algorithms and original Fortran 77 code</small></p>
+        </li>
+        <li>
+          <p><strong>Douglas Bates</strong>. Contributor, copyright holder.
+          <br><small>minqa</small></p>
+        </li>
+        <li>
+          <p><strong>Katharine M. Mullen</strong>. Contributor, copyright holder.
+          <br><small>minqa</small></p>
+        </li>
+        <li>
+          <p><strong>John C. Nash</strong>. Contributor, copyright holder.
+          <br><small>minqa</small></p>
+        </li>
+        <li>
+          <p><strong>Ravi Varadhan</strong>. Contributor, copyright holder.
+          <br><small>minqa</small></p>
+        </li>
+        <li>
+          <p><strong>Johan Larsson</strong>. Contributor, copyright holder.
+          <br><small>basin trust-region / Steihaug implementation</small></p>
+        </li>
       </ul></div>
 
     <div class="section level2">
       <h2 id="citation">Citation</h2>
-      <p><small class="dont-index">Source: <a href="https://github.com/nlmixr2/RcppTrust/blob/v0.1.0/DESCRIPTION" class="external-link"><code>DESCRIPTION</code></a></small></p>
+      <p><small class="dont-index">Source: <a href="https://github.com/nlmixr2/RcppTrust/blob/main/DESCRIPTION" class="external-link"><code>DESCRIPTION</code></a></small></p>
 
-      <p>Geyer CJ, Fidler M (2026).
-<em>RcppTrust: Thread-Safe C++ Port of the 'trust' Trust Region Optimizer</em>.
-R package version 0.1.0, <a href="https://github.com/nlmixr2/RcppTrust/" class="external-link">https://github.com/nlmixr2/RcppTrust/</a>.
+      <p>Geyer CJ, Fidler M, Powell MJD (2026).
+<em>RcppTrust: Thread-Safe C++ Trust Region Optimizers</em>.
+R package version 0.2.0, <a href="https://github.com/nlmixr2/RcppTrust/" class="external-link">https://github.com/nlmixr2/RcppTrust/</a>.
 </p>
       <pre>@Manual{,
-  title = {RcppTrust: Thread-Safe C++ Port of the 'trust' Trust Region Optimizer},
-  author = {Charles J. Geyer and Matthew Fidler},
+  title = {RcppTrust: Thread-Safe C++ Trust Region Optimizers},
+  author = {Charles J. Geyer and Matthew Fidler and Michael J. D. Powell},
   year = {2026},
-  note = {R package version 0.1.0},
+  note = {R package version 0.2.0},
   url = {https://github.com/nlmixr2/RcppTrust/},
 }</pre>
     </div>
@@ -65,7 +94,7 @@ R package version 0.1.0, <a href="https://github.com/nlmixr2/RcppTrust/" class="
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Charles J. Geyer, Matthew Fidler.</p>
+  <p>Developed by Charles J. Geyer, Matthew Fidler, Michael J. D. Powell.</p>
 </div>
 
 <div class="pkgdown-footer-right">

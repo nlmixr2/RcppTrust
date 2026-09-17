@@ -8,6 +8,15 @@ paper/vignette, or Nocedal and Wright (1999, Chapter 4) and Fletcher
 package actually needs to know: what carries over unchanged, what’s new,
 and how to call the new thread-safe C interface from your own package.
 
+The package also includes three more trust-region optimizers built the
+same way, each with an R function and a thread-safe C core:
+[`steihaug()`](../reference/steihaug.md) (truncated-CG trust region,
+ported from the Rust crate basin), and
+[`bobyqa()`](../reference/bobyqa.md) and
+[`newuoa()`](../reference/newuoa.md) (Powell’s derivative-free methods,
+ported from `minqa`). They are covered in
+[`vignette("trust-region-methods")`](../articles/trust-region-methods.md).
+
 ## Similarities: what carries over unchanged
 
 [`RcppTrust::trust()`](../reference/trust.md) is a drop-in replacement
@@ -140,9 +149,9 @@ mb_small <- microbenchmark(
 )
 print(mb_small)
 #> Unit: microseconds
-#>       expr      min       lq      mean    median       uq      max neval
-#>      trust 1306.198 1344.004 1510.6615 1366.9435 1463.942 3639.080    50
-#>  RcppTrust  600.591  619.429  641.1857  632.3685  646.980  727.169    50
+#>       expr      min       lq      mean   median       uq      max neval
+#>      trust 1313.688 1344.723 1547.2143 1372.976 1467.226 3613.313    50
+#>  RcppTrust  589.188  610.941  639.2165  626.744  663.840  746.492    50
 ```
 
 A larger problem – the restricted-domain log-barrier objective from
@@ -182,9 +191,9 @@ mb_large <- microbenchmark(
 )
 print(mb_large)
 #> Unit: microseconds
-#>       expr      min       lq     mean    median       uq      max neval
-#>      trust 1886.549 1941.351 2207.979 1982.2515 2647.008 2729.601    30
-#>  RcppTrust  685.297  747.410  829.743  857.3165  904.452  975.979    30
+#>       expr      min       lq      mean   median       uq      max neval
+#>      trust 1896.997 1951.988 2246.5193 2013.034 2676.618 2752.671    30
+#>  RcppTrust  683.969  744.890  833.4008  881.799  920.412  990.326    30
 ```
 
 On this machine, [`RcppTrust::trust()`](../reference/trust.md) comes out
@@ -306,8 +315,12 @@ demonstration.
     }
     ```
 
-    After that, `trust_solve_c_ptr` and `trust_result_free_ptr` are live
-    function pointers with the same signatures as
+    After that, `trust_solve_c_ptr` and `trust_result_free_ptr` (and,
+    for the other optimizers, `steihaug_solve_c_ptr`,
+    `bobyqa_solve_c_ptr`, `newuoa_solve_c_ptr` and their `*_free_ptr`
+    partners; see
+    [`vignette("trust-region-methods")`](../articles/trust-region-methods.md))
+    are live function pointers with the same signatures as
     `trust_solve_c()`/`trust_result_free()`, usable anywhere in your
     package’s C++ – including inside an OpenMP loop fitting many
     subjects’ problems in parallel:

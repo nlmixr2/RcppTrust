@@ -1,0 +1,345 @@
+# More Trust-Region Methods: Steihaug, BOBYQA and NEWUOA
+
+Besides [`trust()`](../reference/trust.md), `RcppTrust` ships three more
+trust-region optimizers. Each one has the same two layers as
+[`trust()`](../reference/trust.md): an R function for interactive use,
+and a thread-safe C core with no R API calls and no global state. The C
+core can run as an inner or outer optimizer inside parallel C++ code
+such as `nlmixr2est`.
+
+| R function | Ported from | Derivatives needed | Bounds | Thread-safe C entry point |
+|----|----|----|----|----|
+| [`trust()`](../reference/trust.md) | CRAN `trust` (Geyer) | gradient + Hessian | no | `trust_solve_c()` |
+| [`steihaug()`](../reference/steihaug.md) | Rust crate [basin](https://github.com/jolars/basin) | gradient + Hessian, or Hessian-vector products | no | `steihaug_solve_c()` |
+| [`bobyqa()`](../reference/bobyqa.md) | Powell’s BOBYQA Fortran, via CRAN `minqa` | none | box | `bobyqa_solve_c()` |
+| [`newuoa()`](../reference/newuoa.md) | Powell’s NEWUOA Fortran, via CRAN `minqa` | none | no | `newuoa_solve_c()` |
+
+## How the methods differ
+
+All four repeat the same loop: build a quadratic model of the objective,
+minimize it within a radius around the current point, compare the actual
+decrease with the predicted one, and grow or shrink the radius. They
+differ in where the model comes from and how the subproblem is solved.
+
+- **[`trust()`](../reference/trust.md)** uses the exact gradient and
+  Hessian, and solves the subproblem nearly exactly with an
+  eigendecomposition. That is robust, but each iteration costs O(n^3).
+- **[`steihaug()`](../reference/steihaug.md)** uses the same
+  derivative-based model, but solves the subproblem approximately by
+  conjugate gradients (CG). CG stops early when it reaches the
+  trust-region boundary or finds a direction of negative curvature. The
+  Hessian is never factorized. If you supply only Hessian-vector
+  products (`hessvec`), the Hessian is never formed at all.
+- **[`bobyqa()`](../reference/bobyqa.md) and
+  [`newuoa()`](../reference/newuoa.md)** never use derivatives. They fit
+  the quadratic model through `npt` previously evaluated points (usually
+  `2n + 1`), and take up the model’s remaining freedom with the smallest
+  change to its Hessian. The step is found by truncated CG, so NEWUOA’s
+  subproblem solver is close in spirit to Steihaug’s; BOBYQA’s also
+  respects box bounds. They track two radii: `rho`, a lower bound that
+  only shrinks, from `rhobeg` to `rhoend`, and controls termination; and
+  `delta`, the step radius, which can grow and shrink above it.
+
+## Steihaug truncated-CG trust region
+
+[`steihaug()`](../reference/steihaug.md) takes separate objective,
+gradient and Hessian functions, because basin requests each one
+separately. It reproduces basin’s evaluation pattern:
+
+- `fn` and `gr` once at the start;
+- `hess` once per outer iteration;
+- `fn` at each trial point;
+- `gr` after each accepted step.
+
+``` r
+
+library(RcppTrust)
+#> Registered S3 method overwritten by 'RcppTrust':
+#>   method      from 
+#>   print.minqa minqa
+
+fr <- function(x) 100 * (x[2] - x[1]^2)^2 + (1 - x[1])^2
+grr <- function(x) c(-400 * x[1] * (x[2] - x[1]^2) - 2 * (1 - x[1]),
+                     200 * (x[2] - x[1]^2))
+hr <- function(x) matrix(c(1200 * x[1]^2 - 400 * x[2] + 2, -400 * x[1],
+                           -400 * x[1], 200), 2, 2)
+
+r <- steihaug(c(-1.2, 1), fr, grr, hr)
+r[c("par", "value", "iterations", "message", "counts")]
+#> $par
+#> [1] 1 1
+#> 
+#> $value
+#> [1] 8.628062e-25
+#> 
+#> $iterations
+#> [1] 27
+#> 
+#> $message
+#> [1] "GradientTolerance"
+#> 
+#> $counts
+#>      fn      gr    hess hessvec 
+#>      31      28      27       0
+```
+
+In matrix-free mode you supply `hessvec(x, v)` instead of `hess`. The
+iterates are the same, but CG calls `hessvec` once per product instead
+of forming the matrix:
+
+``` r
+
+hv <- function(x, v) drop(hr(x) %*% v)
+m <- steihaug(c(-1.2, 1), fr, grr, hessvec = hv)
+identical(m$par, r$par)
+#> [1] TRUE
+m$counts
+#>      fn      gr    hess hessvec 
+#>      31      28       0      76
+```
+
+`control$trace = TRUE` returns one row per subproblem attempt, with the
+radius, predicted and actual reduction, `rho`, whether the step was
+accepted, whether it hit the boundary, and how many CG iterations it
+took:
+
+``` r
+
+tr <- steihaug(c(-1.2, 1), fr, grr, hr, control = list(trace = TRUE))$trace
+head(tr)
+#>   iter radius     value   gradnorm trialValue   preddiff        rho   stepnorm
+#> 1    0   1.00 24.200000 232.867688   4.567782 18.0216125  1.0893708 0.15477985
+#> 2    1   1.00  4.567782  30.944982   4.128383  0.4307893  1.0199868 0.02784227
+#> 3    2   1.00  4.128383   1.948900   5.660014  1.8110241 -0.8457264 1.00000000
+#> 4    2   0.25  4.128383   1.948900   3.679090  0.4389264  1.0236167 0.25000000
+#> 5    3   0.50  3.679090   2.542429   3.023221  0.9038790  0.7256159 0.50000000
+#> 6    4   0.50  3.023221  18.477217   2.717184  0.2977665  1.0277778 0.03223066
+#>   accept hitBoundary cgIter
+#> 1   TRUE       FALSE      1
+#> 2   TRUE       FALSE      1
+#> 3  FALSE        TRUE      2
+#> 4   TRUE        TRUE      2
+#> 5   TRUE        TRUE      2
+#> 6   TRUE       FALSE      1
+```
+
+### What matches basin
+
+The C++ port reproduces basin’s arithmetic in the same order, with
+floating-point contraction turned off. On 33 test setups, each run in
+both exact and matrix-free mode, it matches a basin reference program
+bit for bit: every evaluation point, iteration count, termination reason
+and evaluation count.
+
+The differences from basin are deliberate:
+
+- **Defaults:** `maxit` is 100 (basin’s executor allows 1000) and the
+  absolute gradient tolerance is on at `1e-8` (off in basin). Every
+  other tolerance is off unless you set it in `control`, as in basin.
+- **Errors:** an error in an R callback is raised again as the same R
+  error. In C, the solver returns an error code together with the state
+  at the start of the failing iteration, where basin throws the state
+  away.
+- **Not ported:** basin’s wall-clock limits, observers and cancellation
+  tokens.
+
+## BOBYQA and NEWUOA
+
+[`bobyqa()`](../reference/bobyqa.md) and
+[`newuoa()`](../reference/newuoa.md) are drop-in replacements for
+[`minqa::bobyqa()`](https://rdrr.io/pkg/minqa/man/bobyqa.html) and
+[`minqa::newuoa()`](https://rdrr.io/pkg/minqa/man/newuoa.html). The
+arguments, `control` settings, defaults, warnings, printed output and
+return values are the same:
+
+``` r
+
+fr <- function(x) 100 * (x[2] - x[1]^2)^2 + (1 - x[1])^2
+bobyqa(c(1, 2), fr, lower = c(0, 0), upper = c(4, 4))
+#> parameter estimates: 0.999999968901681, 0.999999928305543 
+#> objective: 9.98796325533312e-15 
+#> number of function evaluations: 341
+newuoa(c(-1.2, 1), fr)
+#> parameter estimates: 0.999999953422979, 0.999999906557554 
+#> objective: 2.17773673529253e-15 
+#> number of function evaluations: 257
+```
+
+Powell’s Fortran 77 code (the unmodified originals are archived in
+[PRIMA](https://github.com/libprima/prima/tree/main/fortran/original)),
+in the modified form distributed with `minqa`, was translated line by
+line into C++ (Powell, 2006; Powell, 2009). The port keeps Powell’s
+variable names, workspace layout, `goto` control flow and order of
+operations. Compared with `minqa`, the parameters, objective values,
+evaluation counts and error codes are bitwise identical:
+
+``` r
+
+extRosen <- function(x) {
+  n <- length(x)
+  sum(100 * (x[-1] - x[-n]^2)^2 + (1 - x[-n])^2)
+}
+ours <- bobyqa(rep(0.5, 6), extRosen, lower = -2, upper = 2,
+               control = list(npt = 13))
+theirs <- minqa::bobyqa(rep(0.5, 6), extRosen, lower = -2, upper = 2,
+                        control = list(npt = 13))
+identical(unclass(ours), unclass(theirs))
+#> [1] TRUE
+```
+
+**One intentional difference.** In `minqa` 1.2.8, BOBYQA’s `RESCUE`
+routine calls the objective as `CALFUN(N,X,IPRINT)`, but `X` is not
+defined inside `RESCUE`. As a result, `minqa` evaluates the objective at
+whatever is in uninitialized memory, and the same run can give different
+results from one call to the next. The port evaluates the point Powell’s
+original code intended, `W(1..N)`. `RESCUE` is only entered on badly
+conditioned problems, so ordinary runs never hit it. The runs that do
+enter `RESCUE` were checked against a copy of `minqa` with only that
+line fixed, and matched it exactly.
+
+UOBYQA from `minqa` is not included. It needs `(n+1)(n+2)/2` points,
+which grows as O(n^2), and NEWUOA covers the same unconstrained,
+derivative-free case with far fewer points.
+
+## The thread-safe C interfaces
+
+Each solver has a plain C header, installed with the package:
+
+- `minqa_types.h`: `bobyqa_solve_c()`, `newuoa_solve_c()`,
+  `minqa_result_free()`, `minqa_options_default()`;
+- `steihaug_types.h`: `steihaug_solve_c()`, `steihaug_result_free()`,
+  `steihaug_options_default()`.
+
+The conventions are the same as for `trust_solve_c()`:
+
+- Options live in a plain struct.
+- The objective receives an opaque `userdata` pointer.
+- Results are written to a caller-supplied struct that owns its buffers
+  until you call the matching `*_result_free()`.
+- There are no locks and no shared mutable state, so any number of
+  threads can each run their own solve.
+
+For the minqa solvers, printing (`iprint`) goes through an optional
+callback instead of `Rprintf()`, and is silent by default.
+
+A consuming package reaches these cores through the same header-only
+pointer table described in
+[`vignette("RcppTrust")`](../articles/RcppTrust.md). After
+`iniRcppTrustPtrs()` runs, `bobyqa_solve_c_ptr`, `newuoa_solve_c_ptr`,
+`minqa_result_free_ptr`, `steihaug_solve_c_ptr` and
+`steihaug_result_free_ptr` are available alongside `trust_solve_c_ptr`.
+New slots are only ever appended to the table. When the installed
+`RcppTrust` is older than the header a consumer was built against, the
+missing pointers are left `NULL`, so check them before use.
+
+The example below runs NEWUOA and matrix-free Steihaug on many starting
+points inside an OpenMP loop, through the resolved pointers:
+
+``` r
+
+cpp_code <- '
+// [[Rcpp::depends(RcppTrust)]]
+#include <Rcpp.h>
+#include <vector>
+
+extern "C" {
+#define iniRcppTrustPtrs _vignette2_iniRcppTrustPtrs
+#include <RcppTrust.h>
+iniRcppTrust
+}
+
+// Derivative-free objective for NEWUOA.
+extern "C" int rosen_f(int n, const double *x, double *f, void *) {
+  double t = x[1] - x[0] * x[0];
+  *f = 100.0 * t * t + (1.0 - x[0]) * (1.0 - x[0]);
+  return 0;
+}
+
+// Value/gradient on request, for Steihaug. The Hessian is never requested
+// in matrix-free mode.
+extern "C" int rosen_vg(int n, const double *x, double *value,
+                        double *gradient, double *hessian, void *) {
+  double t = x[1] - x[0] * x[0];
+  if (value) *value = 100.0 * t * t + (1.0 - x[0]) * (1.0 - x[0]);
+  if (gradient) {
+    gradient[0] = -400.0 * x[0] * t - 2.0 * (1.0 - x[0]);
+    gradient[1] = 200.0 * t;
+  }
+  return 0;
+}
+
+extern "C" int rosen_hv(int n, const double *x, const double *v, double *hv,
+                        void *) {
+  double h11 = 1200.0 * x[0] * x[0] - 400.0 * x[1] + 2.0, h12 = -400.0 * x[0];
+  hv[0] = h11 * v[0] + h12 * v[1];
+  hv[1] = h12 * v[0] + 200.0 * v[1];
+  return 0;
+}
+
+// [[Rcpp::export]]
+Rcpp::NumericMatrix fit_many(SEXP ptrTable, int nStarts) {
+  _vignette2_iniRcppTrustPtrs(ptrTable);  // normally done once in .onLoad()
+  Rcpp::NumericMatrix out(nStarts, 4);
+  std::vector<double> res(4 * nStarts);
+  // Build with OpenMP (e.g. -fopenmp in the package Makevars) to run
+  // this loop in parallel; without it the pragma is ignored.
+  #pragma omp parallel for num_threads(2)
+  for (int i = 0; i < nStarts; i++) {
+    double start[2] = {-1.2 + 0.05 * i, 1.0};
+
+    minqa_options_t mo = minqa_options_default(2, start);
+    minqa_result_t mr;
+    newuoa_solve_c_ptr(2, start, rosen_f, nullptr, &mo, &mr);
+
+    steihaug_options_t so = steihaug_options_default();
+    steihaug_result_t sr;
+    steihaug_solve_c_ptr(2, start, rosen_vg, rosen_hv, nullptr, &so, &sr);
+
+    res[4 * i] = mr.par[0];
+    res[4 * i + 1] = mr.feval;
+    res[4 * i + 2] = sr.argument[0];
+    res[4 * i + 3] = sr.iterations;
+    minqa_result_free_ptr(&mr);
+    steihaug_result_free_ptr(&sr);
+  }
+  for (int i = 0; i < nStarts; i++)
+    for (int j = 0; j < 4; j++) out(i, j) = res[4 * i + j];
+  Rcpp::colnames(out) = Rcpp::CharacterVector::create(
+      "newuoa_x1", "newuoa_feval", "steihaug_x1", "steihaug_iter");
+  return out;
+}
+'
+Rcpp::sourceCpp(code = cpp_code)
+head(fit_many(RcppTrust:::.RcppTrustPtr(), 16L))
+#>      newuoa_x1 newuoa_feval steihaug_x1 steihaug_iter
+#> [1,] 0.9999998          257           1            27
+#> [2,] 1.0000000          259           1            43
+#> [3,] 0.9999999          262           1            36
+#> [4,] 1.0000000          285           1            30
+#> [5,] 0.9999996          282           1            29
+#> [6,] 0.9999999          298           1            32
+```
+
+Every call inside the loop gets its own options, result and workspace,
+so the threads need no coordination. The package’s test suite runs each
+solver on 64 starting points both sequentially and across OpenMP
+threads, and checks that the two sets of results are bitwise identical.
+
+## References
+
+Powell, M. J. D. (2006). The NEWUOA software for unconstrained
+optimization without derivatives. In G. Di Pillo and M. Roma (eds),
+*Large-Scale Nonlinear Optimization*, 255-297. Springer.
+<https://doi.org/10.1007/0-387-30065-1_16>
+
+Powell, M. J. D. (2009). *The BOBYQA algorithm for bound constrained
+optimization without derivatives*. Report DAMTP 2009/NA06, Centre for
+Mathematical Sciences, University of Cambridge.
+
+Powell, M. J. D. Original Fortran 77 source code for NEWUOA and BOBYQA,
+archived at
+<https://github.com/libprima/prima/tree/main/fortran/original>.
+
+Steihaug, T. (1983). The conjugate gradient method and trust regions in
+large scale optimization. *SIAM Journal on Numerical Analysis*, 20(3),
+626-637. <https://doi.org/10.1137/0720042>

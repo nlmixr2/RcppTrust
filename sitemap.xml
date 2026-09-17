@@ -1,12 +1,18 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>/404.html</loc></url>
-<url><loc>/LICENSE-text.html</loc></url>
 <url><loc>/articles/RcppTrust.html</loc></url>
 <url><loc>/articles/index.html</loc></url>
+<url><loc>/articles/trust-region-methods.html</loc></url>
 <url><loc>/authors.html</loc></url>
 <url><loc>/index.html</loc></url>
+<url><loc>/news/index.html</loc></url>
+<url><loc>/reference/bobyqa.html</loc></url>
 <url><loc>/reference/dot-RcppTrustPtr.html</loc></url>
 <url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/minqa_c_api.html</loc></url>
+<url><loc>/reference/newuoa.html</loc></url>
+<url><loc>/reference/print.minqa.html</loc></url>
+<url><loc>/reference/steihaug.html</loc></url>
 <url><loc>/reference/trust.html</loc></url>
 </urlset>
 
