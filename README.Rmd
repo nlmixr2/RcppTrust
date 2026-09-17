@@ -40,6 +40,19 @@ criteria -- and exposes it three ways:
   library -- the same pattern `rxode2`/`n1qn1`/`lbfgsb3c` use across
   the nlmixr2 ecosystem.
 
+It also includes three more trust-region optimizers built the same way,
+each with an R function and a thread-safe C entry point:
+
+| R function | Ported from | Needs | C entry point |
+|---|---|---|---|
+| `steihaug()` | [basin](https://github.com/jolars/basin) (Rust) | gradient + Hessian or Hessian-vector products | `steihaug_solve_c()` |
+| `bobyqa()` | [`minqa`](https://cran.r-project.org/package=minqa) (Powell) | function values only; box bounds | `bobyqa_solve_c()` |
+| `newuoa()` | [`minqa`](https://cran.r-project.org/package=minqa) (Powell) | function values only | `newuoa_solve_c()` |
+
+`bobyqa()`/`newuoa()` are drop-in replacements for their `minqa`
+counterparts and give bitwise-identical results; `steihaug()` reproduces
+basin's iterates bit for bit. See `vignette("trust-region-methods")`.
+
 See `vignette("RcppTrust")` for what's the same as upstream `trust`,
 what's different, and a worked example of the C interface and the
 registration pattern.
@@ -83,4 +96,9 @@ out[c("value", "argument", "converged", "iterations")]
 
 - Charles J. Geyer -- original algorithm and R implementation
   (`trust`)
-- Matthew Fidler -- thread-safe C++ port (`RcppTrust`)
+- M. J. D. Powell -- BOBYQA and NEWUOA algorithms and Fortran code
+- Douglas Bates, Katharine M. Mullen, John C. Nash, Ravi Varadhan --
+  `minqa`, the R distribution of Powell's code this port follows
+- Johan Larsson and basin contributors -- basin's Steihaug trust-region
+  implementation
+- Matthew Fidler -- thread-safe C++ ports (`RcppTrust`)

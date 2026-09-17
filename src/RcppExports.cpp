@@ -12,6 +12,64 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// minqa_bobyqa_r
+List minqa_bobyqa_r(NumericVector par, NumericVector lower, NumericVector upper, Environment ctrl, Function fn);
+RcppExport SEXP _RcppTrust_minqa_bobyqa_r(SEXP parSEXP, SEXP lowerSEXP, SEXP upperSEXP, SEXP ctrlSEXP, SEXP fnSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type par(parSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type lower(lowerSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type upper(upperSEXP);
+    Rcpp::traits::input_parameter< Environment >::type ctrl(ctrlSEXP);
+    Rcpp::traits::input_parameter< Function >::type fn(fnSEXP);
+    rcpp_result_gen = Rcpp::wrap(minqa_bobyqa_r(par, lower, upper, ctrl, fn));
+    return rcpp_result_gen;
+END_RCPP
+}
+// minqa_newuoa_r
+List minqa_newuoa_r(NumericVector par, Environment ctrl, Function fn);
+RcppExport SEXP _RcppTrust_minqa_newuoa_r(SEXP parSEXP, SEXP ctrlSEXP, SEXP fnSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type par(parSEXP);
+    Rcpp::traits::input_parameter< Environment >::type ctrl(ctrlSEXP);
+    Rcpp::traits::input_parameter< Function >::type fn(fnSEXP);
+    rcpp_result_gen = Rcpp::wrap(minqa_newuoa_r(par, ctrl, fn));
+    return rcpp_result_gen;
+END_RCPP
+}
+// solver_openmp_stress_test
+List solver_openmp_stress_test(std::string solver, int n, int nStarts, int nThreadsRequested);
+RcppExport SEXP _RcppTrust_solver_openmp_stress_test(SEXP solverSEXP, SEXP nSEXP, SEXP nStartsSEXP, SEXP nThreadsRequestedSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type solver(solverSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< int >::type nStarts(nStartsSEXP);
+    Rcpp::traits::input_parameter< int >::type nThreadsRequested(nThreadsRequestedSEXP);
+    rcpp_result_gen = Rcpp::wrap(solver_openmp_stress_test(solver, n, nStarts, nThreadsRequested));
+    return rcpp_result_gen;
+END_RCPP
+}
+// steihaug_solve_r
+List steihaug_solve_r(NumericVector par, Function fn, Function gr, RObject hess, RObject hessvec, List control);
+RcppExport SEXP _RcppTrust_steihaug_solve_r(SEXP parSEXP, SEXP fnSEXP, SEXP grSEXP, SEXP hessSEXP, SEXP hessvecSEXP, SEXP controlSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type par(parSEXP);
+    Rcpp::traits::input_parameter< Function >::type fn(fnSEXP);
+    Rcpp::traits::input_parameter< Function >::type gr(grSEXP);
+    Rcpp::traits::input_parameter< RObject >::type hess(hessSEXP);
+    Rcpp::traits::input_parameter< RObject >::type hessvec(hessvecSEXP);
+    Rcpp::traits::input_parameter< List >::type control(controlSEXP);
+    rcpp_result_gen = Rcpp::wrap(steihaug_solve_r(par, fn, gr, hess, hessvec, control));
+    return rcpp_result_gen;
+END_RCPP
+}
 // trust_solve_r
 List trust_solve_r(Function objfun1, Function tryEval, NumericVector parinit, double rinit, double rmax, Nullable<NumericVector> parscale, int iterlim, double fterm, double mterm, bool minimize, bool blather);
 RcppExport SEXP _RcppTrust_trust_solve_r(SEXP objfun1SEXP, SEXP tryEvalSEXP, SEXP parinitSEXP, SEXP rinitSEXP, SEXP rmaxSEXP, SEXP parscaleSEXP, SEXP iterlimSEXP, SEXP ftermSEXP, SEXP mtermSEXP, SEXP minimizeSEXP, SEXP blatherSEXP) {
@@ -120,6 +178,10 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_RcppTrust_minqa_bobyqa_r", (DL_FUNC) &_RcppTrust_minqa_bobyqa_r, 5},
+    {"_RcppTrust_minqa_newuoa_r", (DL_FUNC) &_RcppTrust_minqa_newuoa_r, 3},
+    {"_RcppTrust_solver_openmp_stress_test", (DL_FUNC) &_RcppTrust_solver_openmp_stress_test, 4},
+    {"_RcppTrust_steihaug_solve_r", (DL_FUNC) &_RcppTrust_steihaug_solve_r, 6},
     {"_RcppTrust_trust_solve_r", (DL_FUNC) &_RcppTrust_trust_solve_r, 11},
     {"_RcppTrust_trust_check_numeric_output_test", (DL_FUNC) &_RcppTrust_trust_check_numeric_output_test, 5},
     {"_RcppTrust_trust_solve_lagrange_multiplier_test", (DL_FUNC) &_RcppTrust_trust_solve_lagrange_multiplier_test, 6},

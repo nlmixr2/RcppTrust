@@ -45,6 +45,8 @@
 #include <Rinternals.h>
 #include <R_ext/Rdynload.h>
 #include "trust_types.h"
+#include "minqa_types.h"
+#include "steihaug_types.h"
 
 #if defined(__cplusplus)
 extern "C" {
@@ -54,25 +56,61 @@ typedef int (*trust_solve_c_t)(int n, const double *parinit, trust_c_objfun_t ob
                                 void *userdata, const trust_options_t *opts,
                                 trust_result_t *result);
 typedef void (*trust_result_free_t)(trust_result_t *res);
+typedef int (*bobyqa_solve_c_t)(int n, const double *par, const double *lower,
+                                const double *upper, minqa_c_objfun_t objfun,
+                                void *userdata, const minqa_options_t *opts,
+                                minqa_result_t *result);
+typedef int (*newuoa_solve_c_t)(int n, const double *par,
+                                minqa_c_objfun_t objfun, void *userdata,
+                                const minqa_options_t *opts,
+                                minqa_result_t *result);
+typedef void (*minqa_result_free_t)(minqa_result_t *res);
+typedef int (*steihaug_solve_c_t)(int n, const double *parinit,
+                                  steihaug_c_objfun_t objfun,
+                                  steihaug_c_hessvec_t hessvec_or_null,
+                                  void *userdata,
+                                  const steihaug_options_t *opts,
+                                  steihaug_result_t *result);
+typedef void (*steihaug_result_free_t)(steihaug_result_t *res);
 
 extern trust_solve_c_t trust_solve_c_ptr;
 extern trust_result_free_t trust_result_free_ptr;
+extern bobyqa_solve_c_t bobyqa_solve_c_ptr;
+extern newuoa_solve_c_t newuoa_solve_c_ptr;
+extern minqa_result_free_t minqa_result_free_ptr;
+extern steihaug_solve_c_t steihaug_solve_c_ptr;
+extern steihaug_result_free_t steihaug_result_free_ptr;
+
+/* Slots beyond the list's length (an older RcppTrust) are left NULL, so a
+ * consumer should check e.g. `steihaug_solve_c_ptr != NULL` before use. */
+static inline DL_FUNC iniRcppTrustSlot0(SEXP p, R_xlen_t i) {
+  return Rf_xlength(p) > i ? R_ExternalPtrAddrFn(VECTOR_ELT(p, i)) : NULL;
+}
 
 static inline SEXP iniRcppTrustPtrs0(SEXP p) {
   if (trust_solve_c_ptr == NULL) {
-    trust_solve_c_ptr = (trust_solve_c_t)R_ExternalPtrAddrFn(VECTOR_ELT(p, 0));
-    trust_result_free_ptr =
-        (trust_result_free_t)R_ExternalPtrAddrFn(VECTOR_ELT(p, 1));
+    trust_solve_c_ptr = (trust_solve_c_t)iniRcppTrustSlot0(p, 0);
+    trust_result_free_ptr = (trust_result_free_t)iniRcppTrustSlot0(p, 1);
+    bobyqa_solve_c_ptr = (bobyqa_solve_c_t)iniRcppTrustSlot0(p, 2);
+    newuoa_solve_c_ptr = (newuoa_solve_c_t)iniRcppTrustSlot0(p, 3);
+    minqa_result_free_ptr = (minqa_result_free_t)iniRcppTrustSlot0(p, 4);
+    steihaug_solve_c_ptr = (steihaug_solve_c_t)iniRcppTrustSlot0(p, 5);
+    steihaug_result_free_ptr = (steihaug_result_free_t)iniRcppTrustSlot0(p, 6);
   }
   return R_NilValue;
 }
 
-#define iniRcppTrust                             \
-  trust_solve_c_t trust_solve_c_ptr = NULL;       \
-  trust_result_free_t trust_result_free_ptr = NULL; \
-  SEXP iniRcppTrustPtrs(SEXP p) {                 \
-    iniRcppTrustPtrs0(p);                         \
-    return R_NilValue;                            \
+#define iniRcppTrust                                    \
+  trust_solve_c_t trust_solve_c_ptr = NULL;              \
+  trust_result_free_t trust_result_free_ptr = NULL;      \
+  bobyqa_solve_c_t bobyqa_solve_c_ptr = NULL;            \
+  newuoa_solve_c_t newuoa_solve_c_ptr = NULL;            \
+  minqa_result_free_t minqa_result_free_ptr = NULL;      \
+  steihaug_solve_c_t steihaug_solve_c_ptr = NULL;        \
+  steihaug_result_free_t steihaug_result_free_ptr = NULL; \
+  SEXP iniRcppTrustPtrs(SEXP p) {                        \
+    iniRcppTrustPtrs0(p);                                \
+    return R_NilValue;                                   \
   }
 
 #if defined(__cplusplus)
