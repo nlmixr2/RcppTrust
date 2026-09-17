@@ -22,8 +22,8 @@ parallel C++ code such as `nlmixr2est`.
 |---|---|---|---|---|
 | `trust()` | CRAN `trust` (Geyer) | gradient + Hessian | no | `trust_solve_c()` |
 | `steihaug()` | Rust crate [basin](https://github.com/jolars/basin) | gradient + Hessian, or Hessian-vector products | no | `steihaug_solve_c()` |
-| `bobyqa()` | CRAN `minqa` (Powell's Fortran) | none | box | `bobyqa_solve_c()` |
-| `newuoa()` | CRAN `minqa` (Powell's Fortran) | none | no | `newuoa_solve_c()` |
+| `bobyqa()` | Powell's BOBYQA Fortran, via CRAN `minqa` | none | box | `bobyqa_solve_c()` |
+| `newuoa()` | Powell's NEWUOA Fortran, via CRAN `minqa` | none | no | `newuoa_solve_c()` |
 
 ## How the methods differ
 
@@ -129,7 +129,10 @@ bobyqa(c(1, 2), fr, lower = c(0, 0), upper = c(4, 4))
 newuoa(c(-1.2, 1), fr)
 ```
 
-The Fortran was translated line by line into C++. The port keeps
+Powell's Fortran 77 code (the unmodified originals are archived in
+[PRIMA](https://github.com/libprima/prima/tree/main/fortran/original)),
+in the modified form distributed with `minqa`, was translated line by
+line into C++ (Powell, 2006; Powell, 2009). The port keeps
 Powell's variable names, workspace layout, `goto` control flow and
 order of operations. Compared with `minqa`, the parameters, objective
 values, evaluation counts and error codes are bitwise identical:
@@ -274,3 +277,21 @@ Every call inside the loop gets its own options, result and workspace,
 so the threads need no coordination. The package's test suite runs each
 solver on 64 starting points both sequentially and across OpenMP
 threads, and checks that the two sets of results are bitwise identical.
+
+## References
+
+Powell, M. J. D. (2006). The NEWUOA software for unconstrained
+optimization without derivatives. In G. Di Pillo and M. Roma (eds),
+*Large-Scale Nonlinear Optimization*, 255-297. Springer.
+<https://doi.org/10.1007/0-387-30065-1_16>
+
+Powell, M. J. D. (2009). *The BOBYQA algorithm for bound constrained
+optimization without derivatives*. Report DAMTP 2009/NA06, Centre for
+Mathematical Sciences, University of Cambridge.
+
+Powell, M. J. D. Original Fortran 77 source code for NEWUOA and BOBYQA,
+archived at <https://github.com/libprima/prima/tree/main/fortran/original>.
+
+Steihaug, T. (1983). The conjugate gradient method and trust regions in
+large scale optimization. *SIAM Journal on Numerical Analysis*, 20(3),
+626-637. <https://doi.org/10.1137/0720042>

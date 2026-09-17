@@ -7,8 +7,8 @@ Authors@R: c(
         email = "geyer@umn.edu", comment = c(ORCID = "0000-0003-1471-1703")),
     person(given = "Matthew", family = "Fidler", role = c("aut", "cre"),
         email = "matthew.fidler@gmail.com", comment = c(ORCID = "0000-0001-8538-6691")),
-    person(given = c("M.", "J.", "D."), family = "Powell", role = c("aut", "cph"),
-        comment = "BOBYQA and NEWUOA algorithms and Fortran code"),
+    person(given = c("Michael", "J.", "D."), family = "Powell", role = "aut",
+        comment = "BOBYQA and NEWUOA algorithms and original Fortran 77 code"),
     person(given = "Douglas", family = "Bates", role = c("ctb", "cph"),
         comment = "minqa"),
     person(given = c("Katharine", "M."), family = "Mullen", role = c("ctb", "cph"),
@@ -28,11 +28,15 @@ Description: Thread-safe C++ trust region optimizers, each exposed
     Charles J. Geyer; a port of the Steihaug truncated conjugate-gradient
     trust region method from the 'basin' Rust crate (Steihaug (1983)
     <doi:10.1137/0720042>); and ports of M. J. D. Powell's
-    derivative-free BOBYQA and NEWUOA methods as distributed in the
-    'minqa' package.
+    derivative-free BOBYQA (Powell (2009), Report DAMTP 2009/NA06) and
+    NEWUOA (Powell (2006) <doi:10.1007/0-387-30065-1_16>) Fortran 77
+    code <https://github.com/libprima/prima/tree/main/fortran/original>,
+    as modified and distributed in the 'minqa' package, whose R
+    interface is reproduced.
 License: GPL-2
-Copyright: See inst/COPYRIGHTS for the copyright holders and
-    licenses of code ported from 'trust', 'basin' and 'minqa'.
+Copyright: See inst/COPYRIGHTS for the sources, copyright holders and
+    licenses of code ported from 'trust', 'basin', 'minqa' and Powell's
+    Fortran.
 URL: https://github.com/nlmixr2/RcppTrust/,
     https://nlmixr2.github.io/RcppTrust/,
     http://www.stat.umn.edu/geyer/trust/

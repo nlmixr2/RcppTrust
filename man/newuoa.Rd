@@ -3,6 +3,11 @@
 \name{newuoa}
 \alias{newuoa}
 \title{Unconstrained derivative-free optimization (NEWUOA)}
+\source{
+M. J. D. Powell's original Fortran 77 NEWUOA code, archived at
+  \url{https://github.com/libprima/prima/tree/main/fortran/original/newuoa};
+  R interface following the \pkg{minqa} package.
+}
 \usage{
 newuoa(par, fn, control = list(), ...)
 }
@@ -35,6 +40,7 @@ newuoa(c(1, 2), fr)
 M. J. D. Powell (2006), "The NEWUOA software for
   unconstrained optimization without derivatives", in Large-Scale
   Nonlinear Optimization, Springer, 255-297.
+  \doi{10.1007/0-387-30065-1_16}
 }
 \seealso{
 [bobyqa()], [minqa_c_api]

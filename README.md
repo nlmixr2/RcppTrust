@@ -36,11 +36,11 @@ three ways:
 It also includes three more trust-region optimizers built the same way,
 each with an R function and a thread-safe C entry point:
 
-| R function   | Ported from                                                  | Needs                                         | C entry point        |
-|--------------|--------------------------------------------------------------|-----------------------------------------------|----------------------|
-| `steihaug()` | [basin](https://github.com/jolars/basin) (Rust)              | gradient + Hessian or Hessian-vector products | `steihaug_solve_c()` |
-| `bobyqa()`   | [`minqa`](https://cran.r-project.org/package=minqa) (Powell) | function values only; box bounds              | `bobyqa_solve_c()`   |
-| `newuoa()`   | [`minqa`](https://cran.r-project.org/package=minqa) (Powell) | function values only                          | `newuoa_solve_c()`   |
+| R function   | Ported from                                                                                                                                             | Needs                                         | C entry point        |
+|--------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------|----------------------|
+| `steihaug()` | [basin](https://github.com/jolars/basin) (Rust)                                                                                                         | gradient + Hessian or Hessian-vector products | `steihaug_solve_c()` |
+| `bobyqa()`   | Powell’s [BOBYQA Fortran](https://github.com/libprima/prima/tree/main/fortran/original/bobyqa), via [`minqa`](https://cran.r-project.org/package=minqa) | function values only; box bounds              | `bobyqa_solve_c()`   |
+| `newuoa()`   | Powell’s [NEWUOA Fortran](https://github.com/libprima/prima/tree/main/fortran/original/newuoa), via [`minqa`](https://cran.r-project.org/package=minqa) | function values only                          | `newuoa_solve_c()`   |
 
 `bobyqa()`/`newuoa()` are drop-in replacements for their `minqa`
 counterparts and give bitwise-identical results; `steihaug()` reproduces
@@ -99,7 +99,8 @@ out[c("value", "argument", "converged", "iterations")]
 ## Authors
 
 - Charles J. Geyer – original algorithm and R implementation (`trust`)
-- M. J. D. Powell – BOBYQA and NEWUOA algorithms and Fortran code
+- M. J. D. Powell – BOBYQA and NEWUOA algorithms and original Fortran 77
+  code
 - Douglas Bates, Katharine M. Mullen, John C. Nash, Ravi Varadhan –
   `minqa`, the R distribution of Powell’s code this port follows
 - Johan Larsson and basin contributors – basin’s Steihaug trust-region

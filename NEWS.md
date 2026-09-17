@@ -1,8 +1,11 @@
 # RcppTrust 0.2.0
 
-* The package license is now GPL-2, because the new BOBYQA/NEWUOA ports
-  derive from the GPL-2 package 'minqa'. Notices for the 'trust' and
-  'basin' code are retained in `inst/COPYRIGHTS`.
+* The package license is now GPL-2, because the BOBYQA/NEWUOA ports and
+  their R wrappers derive from the GPL-2 package 'minqa'.
+
+* M. J. D. Powell is added as an author for the BOBYQA/NEWUOA algorithms
+  and original Fortran code; sources and notices for all ported code
+  ('trust', 'basin', 'minqa', Powell's Fortran) are listed in `inst/COPYRIGHTS`.
 
 * New `steihaug()`: a Steihaug truncated conjugate-gradient trust-region
   Newton minimizer ported from the Rust crate 'basin', with exact-Hessian

@@ -1,7 +1,7 @@
 RcppTrust is distributed under the GNU General Public License, version 2
-(GPL-2), because its BOBYQA/NEWUOA ports derive from the GPL-2 package
-'minqa'. It includes code ported from the following sources, whose
-notices are retained below.
+(GPL-2), because its BOBYQA/NEWUOA ports and R wrappers derive from the
+GPL-2 package 'minqa'. It includes code ported from the following sources,
+whose notices are retained below.
 
 trust (src/trust_*, R/trust.R)
   Ported from the R package 'trust' by Charles J. Geyer, distributed under
@@ -64,7 +64,24 @@ Steihaug trust region (src/steihaug_core.cpp, inst/include/steihaug_types.h)
     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 BOBYQA and NEWUOA (src/minqa_*.cpp, R/minqa.R, inst/include/minqa_types.h)
-  Ported from M. J. D. Powell's Fortran 77 BOBYQA and NEWUOA, as modified
-  and distributed in the R package 'minqa' 1.2.8 (Douglas Bates,
-  Katharine M. Mullen, John C. Nash, Ravi Varadhan), which is licensed
-  GPL-2. The R wrapper code follows minqa's R/minqa.R.
+  Ported from M. J. D. Powell's original Fortran 77 BOBYQA (2009) and
+  NEWUOA (2004) code, which Powell released without a license. The
+  unmodified originals are archived at
+    https://github.com/libprima/prima/tree/main/fortran/original/bobyqa
+    https://github.com/libprima/prima/tree/main/fortran/original/newuoa
+  (see also https://www.zhangzk.net/software.html).
+
+  The C++ is translated from the versions of that Fortran modified and
+  distributed in the R package 'minqa' 1.2.8 (copyright Douglas Bates,
+  Katharine M. Mullen, John C. Nash, Ravi Varadhan; GPL-2), keeping its
+  error-code and printing edits, and R/minqa.R and the print glue in
+  src/minqa_common.h follow minqa's R/minqa.R and src/minqa.cpp.
+
+  References:
+    M. J. D. Powell (2006), "The NEWUOA software for unconstrained
+    optimization without derivatives", in G. Di Pillo and M. Roma (eds),
+    Large-Scale Nonlinear Optimization, Springer, 255-297.
+    doi:10.1007/0-387-30065-1_16
+    M. J. D. Powell (2009), "The BOBYQA algorithm for bound constrained
+    optimization without derivatives", Report DAMTP 2009/NA06, Centre for
+    Mathematical Sciences, University of Cambridge.

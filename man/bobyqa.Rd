@@ -3,6 +3,11 @@
 \name{bobyqa}
 \alias{bobyqa}
 \title{Nonlinear optimization with box constraints (BOBYQA)}
+\source{
+M. J. D. Powell's original Fortran 77 BOBYQA code, archived at
+  \url{https://github.com/libprima/prima/tree/main/fortran/original/bobyqa};
+  R interface following the \pkg{minqa} package.
+}
 \usage{
 bobyqa(par, fn, lower = -Inf, upper = Inf, control = list(), ...)
 }

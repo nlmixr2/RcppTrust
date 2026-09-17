@@ -60,6 +60,9 @@
 #' @references M. J. D. Powell (2009), "The BOBYQA algorithm for bound
 #'   constrained optimization without derivatives", Report No. DAMTP
 #'   2009/NA06, Centre for Mathematical Sciences, University of Cambridge.
+#' @source M. J. D. Powell's original Fortran 77 BOBYQA code, archived at
+#'   \url{https://github.com/libprima/prima/tree/main/fortran/original/bobyqa};
+#'   R interface following the \pkg{minqa} package.
 #' @seealso [newuoa()], and [minqa_c_api] for calling the
 #'   solvers from parallel C/C++ code.
 #' @examples
@@ -163,6 +166,10 @@ bobyqa <- function(par, fn, lower = -Inf, upper = Inf, control = list(), ...)
 #' @references M. J. D. Powell (2006), "The NEWUOA software for
 #'   unconstrained optimization without derivatives", in Large-Scale
 #'   Nonlinear Optimization, Springer, 255-297.
+#'   \doi{10.1007/0-387-30065-1_16}
+#' @source M. J. D. Powell's original Fortran 77 NEWUOA code, archived at
+#'   \url{https://github.com/libprima/prima/tree/main/fortran/original/newuoa};
+#'   R interface following the \pkg{minqa} package.
 #' @seealso [bobyqa()], [minqa_c_api]
 #' @examples
 #' fr <- function(x) 100 * (x[2] - x[1]^2)^2 + (1 - x[1])^2
