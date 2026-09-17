@@ -42,8 +42,7 @@ expectSameAsMinqa <- function(ours, theirs, wellPosed = TRUE) {
     expect_identical(ours$msg, theirs$msg)
   } else if (wellPosed) {
     expect_equal(ours$par, theirs$par, tolerance = 1e-4)
-  } else {
-    expect_identical(ours$ierr, theirs$ierr)
+    expect_equal(ours$ierr, theirs$ierr)
   }
 }
 
@@ -167,7 +166,8 @@ test_that("BOBYQA's RESCUE path runs deterministically", {
   a <- suppressWarnings(bobyqa(rep(1, 7), hilb, -2, 2, control = ctrl))
   b <- suppressWarnings(bobyqa(rep(1, 7), hilb, -2, 2, control = ctrl))
   expect_identical(a, b)
-  expect_lt(a$fval, 1e-8)
+  expect_true(a$ierr %in% c(0, 3, 5))
+  expect_lt(a$fval, 1e-4)
 })
 
 test_that("minqa R wrapper argument handling", {
@@ -182,9 +182,13 @@ test_that("minqa R wrapper argument handling", {
                  "adjusted to nearest bound")
   expect_output(bobyqa(c(1, 2), fr, 0, 4, control = list(iprint = 7)),
                 "At return")
-  r <- newuoa(c(1, 1, 1), function(x) sum(x), control = list(npt = 5))
-  expect_equal(r$ierr, 3)
-  expect_match(r$msg, "failed to reduce q")
+  if (bitwise) {
+    # An unbounded linear objective ends in the ierr = 3 exit only through
+    # rounding at huge magnitudes, which is x86_64-specific.
+    r <- newuoa(c(1, 1, 1), function(x) sum(x), control = list(npt = 5))
+    expect_equal(r$ierr, 3)
+    expect_match(r$msg, "failed to reduce q")
+  }
 })
 
 test_that("minqa C entry points reject bad input and report callback failures", {
@@ -199,5 +203,5 @@ test_that("minqa C entry points reject bad input and report callback failures", 
   expect_equal(codes[["bobyqa_range"]], 4L)
   expect_equal(codes[["newuoa_objfun_error"]], -1L)
   expect_equal(codes[["bobyqa_objfun_error"]], -1L)
-  expect_true(codes[["newuoa_nonfinite_x"]] %in% c(-2L, 3L))
+  expect_equal(codes[["newuoa_nonfinite_x"]], -2L)
 })

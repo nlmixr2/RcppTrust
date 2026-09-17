@@ -173,11 +173,6 @@ int minqa_fail_after(int n, const double *x, double *f, void *ud) {
   if ((*left)-- <= 0) return -1;
   return minqa_test_rosen(n, x, f, nullptr);
 }
-int minqa_nan_x(int n, const double *x, double *f, void *) {
-  *f = -x[0] * x[0] - x[1] * x[1];  // unbounded below: iterates run off to Inf
-  (void)n;
-  return 0;
-}
 int steihaug_fail_after(int n, const double *x, double *value, double *gradient,
                         double *hessian, void *ud) {
   int *left = static_cast<int *>(ud);
@@ -237,9 +232,12 @@ IntegerVector solver_c_api_edge_test() {
   push("bobyqa_objfun_error", bobyqa_solve_c(2, start, nullptr, nullptr,
                                              minqa_fail_after, &left, &mo, &mr));
   minqa_result_free(&mr);
-  push("newuoa_nonfinite_x", newuoa_solve_c(2, start, minqa_nan_x, nullptr,
-                                            &mo, &mr));
+  // A non-finite start reaches calfun on the first evaluation, which aborts
+  // (minqa stops with "non-finite x values not allowed in calfun").
+  double nanstart[2] = {NAN, 1.0};
+  int nanCode = newuoa_solve_c(2, nanstart, minqa_test_rosen, nullptr, &mo, &mr);
   minqa_result_free(&mr);
+  push("newuoa_nonfinite_x", nanCode);
 
   steihaug_options_t so = steihaug_options_default();
   push("steihaug_ok", steihaug_solve_c(2, start, steihaug_test_rosen, nullptr,

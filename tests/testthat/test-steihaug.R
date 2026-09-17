@@ -81,8 +81,7 @@ test_that("every Steihaug stopping rule is reachable from R", {
   expect_equal(run(stepTol = 1e-8)$message, "ParamTolerance")
   expect_equal(run(relStepTol = 1e-8)$message, "RelativeParamTolerance")
   expect_equal(run(costTol = 1e-14)$message, "CostTolerance")
-  expect_true(run(relCostTol = 1e-10)$message %in%
-                c("RelativeCostTolerance", "SolverConverged"))
+  expect_equal(run(relCostTol = 0.5)$message, "RelativeCostTolerance")
   expect_equal(run(maxCostEvals = 10)$message, "MaxCostEvals")
   expect_equal(run(maxGradEvals = 5)$message, "MaxGradientEvals")
   r <- run(maxit = 1000)
@@ -92,7 +91,7 @@ test_that("every Steihaug stopping rule is reachable from R", {
   r <- steihaug(c(-1.2, 1), fr, grr, hr,
                 control = list(theta = 0.7, kappa = 0.1, cgMaxit = 1,
                                maxit = 50))
-  expect_true(r$status >= 0L)
+  expect_equal(r$message, "MaxIter")
   r <- steihaug(c(-1.2, 1), fr, grr, hr, control = list(theta = 0))
   expect_true(r$converged)
   # A NaN gradient is a failure, not convergence.
