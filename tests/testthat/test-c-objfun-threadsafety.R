@@ -6,7 +6,11 @@
 # (not thread-safe) and keeps no shared mutable state across calls.
 
 test_that("trust_solve_c() gives identical results run sequentially vs. across OpenMP threads", {
-  res <- RcppTrust:::trust_openmp_stress_test(nStarts = 64L, nThreadsRequested = 8L)
+  # Two threads: the most CRAN allows, and enough to exercise concurrency.
+  res <- RcppTrust:::trust_openmp_stress_test(
+    nStarts = 64L,
+    nThreadsRequested = 2L
+  )
 
   expect_equal(res$maxArgDiff, 0)
   expect_equal(res$maxValDiff, 0)

@@ -6,6 +6,10 @@
   is now stored by value and re-thrown afresh instead of going through
   `std::exception_ptr` (#3).
 
+* The OpenMP thread-safety tests use at most 2 threads and respect
+  `OMP_THREAD_LIMIT`, so CRAN no longer sees "OMP: Warning #96: Cannot
+  form a team" (#3).
+
 # RcppTrust 0.2.0
 
 * The package license is now GPL-2, because the BOBYQA/NEWUOA ports and

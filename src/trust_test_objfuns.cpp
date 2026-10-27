@@ -124,7 +124,10 @@ List trust_openmp_stress_test(int nStarts, int nThreadsRequested) {
   std::vector<int> threadIds(nStarts, -1);
 
 #ifdef _OPENMP
-  int usedThreads = std::min(nThreadsRequested, omp_get_max_threads());
+  // Also respect OMP_THREAD_LIMIT (CRAN allows 2 threads), so the runtime
+  // never has to shrink the team and warn.
+  int usedThreads = std::min({nThreadsRequested, omp_get_max_threads(),
+                              omp_get_thread_limit()});
   if (usedThreads < 1) usedThreads = 1;
 #pragma omp parallel for num_threads(usedThreads) schedule(static)
 #endif
