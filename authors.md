@@ -32,13 +32,13 @@ Source:
 [`DESCRIPTION`](https://github.com/nlmixr2/RcppTrust/blob/main/DESCRIPTION)
 
 Geyer CJ, Fidler M, Powell MJD (2026). *RcppTrust: Thread-Safe C++ Trust
-Region Optimizers*. R package version 0.2.0,
+Region Optimizers*. R package version 0.2.1,
 <https://github.com/nlmixr2/RcppTrust/>.
 
     @Manual{,
       title = {RcppTrust: Thread-Safe C++ Trust Region Optimizers},
       author = {Charles J. Geyer and Matthew Fidler and Michael J. D. Powell},
       year = {2026},
-      note = {R package version 0.2.0},
+      note = {R package version 0.2.1},
       url = {https://github.com/nlmixr2/RcppTrust/},
     }

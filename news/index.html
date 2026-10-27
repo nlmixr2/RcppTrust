@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">RcppTrust</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,7 +37,11 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.2.0" id="rcpptrust-020">RcppTrust 0.2.0<a class="anchor" aria-label="anchor" href="#rcpptrust-020"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.2.1" id="rcpptrust-021">RcppTrust 0.2.1<a class="anchor" aria-label="anchor" href="#rcpptrust-021"></a></h2>
+<ul><li>Errors raised inside the R callbacks of <code><a href="../reference/bobyqa.html">bobyqa()</a></code>, <code><a href="../reference/newuoa.html">newuoa()</a></code> and <code><a href="../reference/steihaug.html">steihaug()</a></code> are again reported unchanged on clang/libc++ builds (CRAN’s fedora-clang check showed “c++ exception (unknown reason)”). The error is now stored by value and re-thrown afresh instead of going through <code>std::exception_ptr</code> (<a href="https://github.com/nlmixr2/RcppTrust/issues/3" class="external-link">#3</a>).</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.0" id="rcpptrust-020">RcppTrust 0.2.0<a class="anchor" aria-label="anchor" href="#rcpptrust-020"></a></h2><p class="text-muted">CRAN release: 2026-10-27</p>
 <ul><li><p>The package license is now GPL-2, because the BOBYQA/NEWUOA ports and their R wrappers derive from the GPL-2 package ‘minqa’.</p></li>
 <li><p>M. J. D. Powell is added as an author for the BOBYQA/NEWUOA algorithms and original Fortran code; sources and notices for all ported code (‘trust’, ‘basin’, ‘minqa’, Powell’s Fortran) are listed in <code>inst/COPYRIGHTS</code>.</p></li>
 <li><p>New <code><a href="../reference/steihaug.html">steihaug()</a></code>: a Steihaug truncated conjugate-gradient trust-region Newton minimizer ported from the Rust crate ‘basin’, with exact-Hessian and matrix-free (Hessian-vector product) modes, and a thread-safe C entry point <code>steihaug_solve_c()</code>.</p></li>
