@@ -38,7 +38,8 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.1" id="rcpptrust-021">RcppTrust 0.2.1<a class="anchor" aria-label="anchor" href="#rcpptrust-021"></a></h2>
-<ul><li>Errors raised inside the R callbacks of <code><a href="../reference/bobyqa.html">bobyqa()</a></code>, <code><a href="../reference/newuoa.html">newuoa()</a></code> and <code><a href="../reference/steihaug.html">steihaug()</a></code> are again reported unchanged on clang/libc++ builds (CRAN’s fedora-clang check showed “c++ exception (unknown reason)”). The error is now stored by value and re-thrown afresh instead of going through <code>std::exception_ptr</code> (<a href="https://github.com/nlmixr2/RcppTrust/issues/3" class="external-link">#3</a>).</li>
+<ul><li><p>Errors raised inside the R callbacks of <code><a href="../reference/bobyqa.html">bobyqa()</a></code>, <code><a href="../reference/newuoa.html">newuoa()</a></code> and <code><a href="../reference/steihaug.html">steihaug()</a></code> are again reported unchanged on clang/libc++ builds (CRAN’s fedora-clang check showed “c++ exception (unknown reason)”). The error is now stored by value and re-thrown afresh instead of going through <code>std::exception_ptr</code> (<a href="https://github.com/nlmixr2/RcppTrust/issues/3" class="external-link">#3</a>).</p></li>
+<li><p>The OpenMP thread-safety tests use at most 2 threads and respect <code>OMP_THREAD_LIMIT</code>, so CRAN no longer sees “OMP: Warning <a href="https://github.com/nlmixr2/RcppTrust/issues/96" class="external-link">#96</a>: Cannot form a team” (<a href="https://github.com/nlmixr2/RcppTrust/issues/3" class="external-link">#3</a>).</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0" id="rcpptrust-020">RcppTrust 0.2.0<a class="anchor" aria-label="anchor" href="#rcpptrust-020"></a></h2><p class="text-muted">CRAN release: 2026-10-27</p>

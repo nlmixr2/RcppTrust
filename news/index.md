@@ -11,6 +11,11 @@
   re-thrown afresh instead of going through `std::exception_ptr`
   ([\#3](https://github.com/nlmixr2/RcppTrust/issues/3)).
 
+- The OpenMP thread-safety tests use at most 2 threads and respect
+  `OMP_THREAD_LIMIT`, so CRAN no longer sees “OMP: Warning
+  [\#96](https://github.com/nlmixr2/RcppTrust/issues/96): Cannot form a
+  team” ([\#3](https://github.com/nlmixr2/RcppTrust/issues/3)).
+
 ## RcppTrust 0.2.0
 
 CRAN release: 2026-10-27
