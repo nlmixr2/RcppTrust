@@ -34,15 +34,18 @@ class RCallbackError {
 
   bool failed() const { return kind_ != NONE; }
 
-  // Re-raise the captured error (no-op if nothing was captured).
+  // Re-raise the captured error (no-op if nothing was captured). Under
+  // Rcpp's unwind protection an R-level interrupt arrives as a
+  // LongjumpException, and callers only rethrow after failed(), so the
+  // INTERRUPT and NONE cases are defensive and not reachable from tests.
   void rethrow() const {
     switch (kind_) {
-      case INTERRUPT: throw Rcpp::internal::InterruptedException();
+      case INTERRUPT: throw Rcpp::internal::InterruptedException();  // # nocov
       case LONGJUMP: throw Rcpp::LongjumpException(token_);
       case MESSAGE: throw Rcpp::exception(msg_.c_str(), false);
-      case NONE: break;
+      case NONE: break;  // # nocov start
     }
-  }
+  }  // # nocov end
 
  private:
   enum Kind { NONE, INTERRUPT, LONGJUMP, MESSAGE };
