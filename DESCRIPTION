@@ -1,7 +1,7 @@
 Package: RcppTrust
 Type: Package
 Title: Thread-Safe C++ Trust Region Optimizers
-Version: 0.2.0
+Version: 0.2.1
 Authors@R: c(
     person(given = c("Charles", "J."), family = "Geyer", role = c("aut", "cph"),
         email = "geyer@umn.edu", comment = c(ORCID = "0000-0003-1471-1703")),

@@ -55,6 +55,18 @@ test_that("errors and malformed returns in R callbacks propagate", {
                "gradfail")
   expect_error(steihaug(c(-1.2, 1), fr, function(x) 1, hr), "length 2")
   expect_error(steihaug(c(-1.2, 1), fr, grr, function(x) diag(3)), "2 by 2")
+  raise <- function(...) {
+    stop(structure(
+      class = c("myErr", "error", "condition"),
+      list(message = "custom", call = NULL)
+    ))
+  }
+  expect_error(steihaug(c(-1.2, 1), raise, grr, hr), "custom", class = "myErr")
+  expect_error(
+    steihaug(c(-1.2, 1), fr, grr, hessvec = raise),
+    "custom",
+    class = "myErr"
+  )
 })
 
 test_that("infinite trial values are rejected, not accepted", {

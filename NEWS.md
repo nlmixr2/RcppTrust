@@ -1,3 +1,11 @@
+# RcppTrust 0.2.1
+
+* Errors raised inside the R callbacks of `bobyqa()`, `newuoa()` and
+  `steihaug()` are again reported unchanged on clang/libc++ builds (CRAN's
+  fedora-clang check showed "c++ exception (unknown reason)"). The error
+  is now stored by value and re-thrown afresh instead of going through
+  `std::exception_ptr` (#3).
+
 # RcppTrust 0.2.0
 
 * The package license is now GPL-2, because the BOBYQA/NEWUOA ports and

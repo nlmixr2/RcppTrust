@@ -3,8 +3,8 @@
 // C/C++ consumer calls; only the callbacks (which evaluate R closures, so
 // are main-thread only) differ.
 #include <Rcpp.h>
-#include <exception>
 #include <string>
+#include "r_callback_error.h"
 #include "steihaug_types.h"
 using namespace Rcpp;
 
@@ -12,7 +12,7 @@ namespace {
 
 struct SteihaugRObjfun {
   SEXP fn, gr, hess, hessvec;  // hess/hessvec may be R_NilValue
-  std::exception_ptr error;
+  RCallbackError error;
 };
 
 void steihaug_r_copy(SEXP v, int len, double *out, const char *what) {
@@ -50,7 +50,7 @@ int steihaug_r_objfun(int n, const double *x, double *value, double *gradient,
     }
     return 0;
   } catch (...) {
-    d->error = std::current_exception();
+    d->error.capture();
     return -1;
   }
 }
@@ -64,7 +64,7 @@ int steihaug_r_hessvec(int n, const double *x, const double *v, double *hv,
     steihaug_r_copy(hvf(xx, vv), n, hv, "hessvec");
     return 0;
   } catch (...) {
-    d->error = std::current_exception();
+    d->error.capture();
     return -1;
   }
 }
@@ -101,7 +101,7 @@ double ctrl_tol(List ctrl, const char *nm) {
 List steihaug_solve_r(NumericVector par, Function fn, Function gr,
                       RObject hess, RObject hessvec, List control) {
   int n = par.size();
-  SteihaugRObjfun d{fn, gr, hess, hessvec, nullptr};
+  SteihaugRObjfun d{fn, gr, hess, hessvec, {}};
 
   steihaug_options_t o = steihaug_options_default();
   o.initial_radius = ctrl_dbl(control, "rinit");
@@ -132,9 +132,9 @@ List steihaug_solve_r(NumericVector par, Function fn, Function gr,
                    hessvec.isNULL() ? nullptr : steihaug_r_hessvec, &d, &o,
                    &res);
 
-  if (d.error) {
+  if (d.error.failed()) {
     steihaug_result_free(&res);
-    std::rethrow_exception(d.error);
+    d.error.rethrow();
   }
   if (res.status == STEIHAUG_ERR_INVALID_OPTIONS) {
     steihaug_result_free(&res);
