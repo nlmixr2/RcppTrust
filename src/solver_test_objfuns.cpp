@@ -132,7 +132,8 @@ List solver_openmp_stress_test(std::string solver, int n, int nStarts,
 
   std::vector<int> threadIds(nStarts, 0);
 #ifdef _OPENMP
-  int usedThreads = std::max(1, std::min(nThreadsRequested, omp_get_max_threads()));
+  int usedThreads = std::max(1, std::min({nThreadsRequested, omp_get_max_threads(),
+                                          omp_get_thread_limit()}));
 #pragma omp parallel for num_threads(usedThreads) schedule(static)
 #endif
   for (int i = 0; i < nStarts; i++) {
