@@ -123,6 +123,19 @@ test_that("R errors inside fn propagate unchanged", {
   expect_error(bobyqa(c(1, 2), bad, lower = 0, upper = 4), "boom")
   expect_error(bobyqa(c(5, 2), fr, lower = 0, upper = 4),
                "Starting values violate bounds")
+  # The original condition object (and its class) reaches the caller.
+  raise <- function(x) {
+    stop(structure(
+      class = c("myErr", "error", "condition"),
+      list(message = "custom", call = NULL)
+    ))
+  }
+  expect_error(newuoa(c(1, 2), raise), "custom", class = "myErr")
+  expect_error(
+    bobyqa(c(1, 2), raise, lower = 0, upper = 4),
+    "custom",
+    class = "myErr"
+  )
 })
 
 test_that("extra arguments and names are passed to fn", {

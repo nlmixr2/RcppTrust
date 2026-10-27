@@ -4,7 +4,7 @@
 // *_solve_c() cores a C/C++ consumer calls -- only the objective callback
 // (which evaluates an R closure, so is main-thread only) differs.
 #include <Rcpp.h>
-#include <exception>
+#include "r_callback_error.h"
 #include "minqa_types.h"
 using namespace Rcpp;
 
@@ -12,7 +12,7 @@ namespace {
 
 struct MinqaRObjfun {
   SEXP fn;
-  std::exception_ptr error;
+  RCallbackError error;
 };
 
 // Mirrors minqa's calfun(): Rf_asReal(fn(x)), evaluated in fn's
@@ -31,7 +31,7 @@ int minqa_r_objfun(int n, const double *x, double *f, void *userdata) {
     *f = Rf_asReal(v);
     return 0;
   } catch (...) {
-    d->error = std::current_exception();
+    d->error.capture();
     return -1;
   }
 }
@@ -53,9 +53,9 @@ minqa_options_t minqa_r_options(Environment ctrl) {
 // Shape of minqa's rval() list (before the R shim adds `msg`).
 List minqa_r_result(int n, minqa_result_t &res, MinqaRObjfun &d,
                     const char *cls) {
-  if (d.error) {
+  if (d.error.failed()) {
     minqa_result_free(&res);
-    std::rethrow_exception(d.error);
+    d.error.rethrow();
   }
   if (res.ierr == MINQA_ERR_NONFINITE_X) {
     minqa_result_free(&res);
@@ -83,7 +83,7 @@ List minqa_r_result(int n, minqa_result_t &res, MinqaRObjfun &d,
 List minqa_bobyqa_r(NumericVector par, NumericVector lower, NumericVector upper,
                     Environment ctrl, Function fn) {
   int n = par.size();
-  MinqaRObjfun d{fn, nullptr};
+  MinqaRObjfun d{fn, {}};
   minqa_options_t opts = minqa_r_options(ctrl);
   minqa_result_t res;
   bobyqa_solve_c(n, par.begin(), lower.begin(), upper.begin(), minqa_r_objfun,
@@ -94,7 +94,7 @@ List minqa_bobyqa_r(NumericVector par, NumericVector lower, NumericVector upper,
 // [[Rcpp::export]]
 List minqa_newuoa_r(NumericVector par, Environment ctrl, Function fn) {
   int n = par.size();
-  MinqaRObjfun d{fn, nullptr};
+  MinqaRObjfun d{fn, {}};
   minqa_options_t opts = minqa_r_options(ctrl);
   minqa_result_t res;
   newuoa_solve_c(n, par.begin(), minqa_r_objfun, &d, &opts, &res);
