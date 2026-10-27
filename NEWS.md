@@ -10,6 +10,10 @@
   `OMP_THREAD_LIMIT`, so CRAN no longer sees "OMP: Warning #96: Cannot
   form a team" (#3).
 
+* The NEWUOA `ierr = 3` test is skipped when R lacks long double support,
+  since its rounding path depends on `sum()` accumulating in long double
+  (CRAN's noLD check).
+
 # RcppTrust 0.2.0
 
 * The package license is now GPL-2, because the BOBYQA/NEWUOA ports and
