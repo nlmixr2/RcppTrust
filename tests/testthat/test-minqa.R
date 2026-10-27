@@ -31,8 +31,12 @@ bitwise <- R.version$arch %in% c("x86_64", "amd64")
 
 # `wellPosed = FALSE` marks runs (e.g. a bound range of 1e-7) whose end
 # point is sensitive to rounding, so contracted and uncontracted builds
-# legitimately stop at different points.
-expectSameAsMinqa <- function(ours, theirs, wellPosed = TRUE) {
+# legitimately stop at different points. `permInvariant = TRUE` marks
+# objectives (e.g. chebyquad) unchanged by permuting `x`: differently
+# rounded runs may reach the same minimum with coordinates swapped (seen
+# on aarch64), so the parameters are compared as a set.
+expectSameAsMinqa <- function(ours, theirs, wellPosed = TRUE,
+                              permInvariant = FALSE) {
   expect_identical(class(ours), class(theirs))
   if (bitwise) {
     expect_identical(ours$par, theirs$par)
@@ -41,7 +45,12 @@ expectSameAsMinqa <- function(ours, theirs, wellPosed = TRUE) {
     expect_identical(ours$ierr, theirs$ierr)
     expect_identical(ours$msg, theirs$msg)
   } else if (wellPosed) {
-    expect_equal(ours$par, theirs$par, tolerance = 1e-4)
+    if (permInvariant) {
+      expect_equal(sort(ours$par), sort(theirs$par), tolerance = 1e-4)
+      expect_equal(ours$fval, theirs$fval, tolerance = 1e-6)
+    } else {
+      expect_equal(ours$par, theirs$par, tolerance = 1e-4)
+    }
     expect_equal(ours$ierr, theirs$ierr)
   }
 }
@@ -54,7 +63,7 @@ test_that("bobyqa() matches minqa::bobyqa() exactly", {
     list(par = rep(0.5, 6), fn = extRosen, lower = -2, upper = 2,
          control = list(npt = 13)),
     list(par = seq(0.1, 0.9, length.out = 6), fn = chebyquad, lower = 0,
-         upper = 1),
+         upper = 1, permInvariant = TRUE),
     list(par = c(1, 2), fn = fr, lower = c(0, 0), upper = c(4, 4),
          control = list(maxfun = 50)),
     list(par = c(4, 4), fn = fr, lower = c(0, 3.9999999), upper = c(4, 4),
@@ -65,7 +74,8 @@ test_that("bobyqa() matches minqa::bobyqa() exactly", {
     ours <- suppressWarnings(bobyqa(cs$par, cs$fn, cs$lower, cs$upper, ctrl))
     theirs <- suppressWarnings(minqa::bobyqa(cs$par, cs$fn, cs$lower,
                                              cs$upper, ctrl))
-    expectSameAsMinqa(ours, theirs, wellPosed = !isFALSE(cs$wellPosed))
+    expectSameAsMinqa(ours, theirs, wellPosed = !isFALSE(cs$wellPosed),
+                      permInvariant = isTRUE(cs$permInvariant))
   }
 })
 
@@ -75,7 +85,7 @@ test_that("newuoa() matches minqa::newuoa() exactly", {
     list(par = c(-1.2, 1), fn = fr),
     list(par = rep(0.5, 6), fn = extRosen, control = list(npt = 13)),
     list(par = seq(0.1, 0.9, length.out = 6), fn = chebyquad,
-         control = list(npt = 28)),
+         control = list(npt = 28), permInvariant = TRUE),
     list(par = rep(pi, 4), fn = function(x) -(10 - sum(x * seq_along(x))^2),
          control = list(maxfun = 25))
   )
@@ -83,7 +93,7 @@ test_that("newuoa() matches minqa::newuoa() exactly", {
     ctrl <- if (is.null(cs$control)) list() else cs$control
     ours <- suppressWarnings(newuoa(cs$par, cs$fn, ctrl))
     theirs <- suppressWarnings(minqa::newuoa(cs$par, cs$fn, ctrl))
-    expectSameAsMinqa(ours, theirs)
+    expectSameAsMinqa(ours, theirs, permInvariant = isTRUE(cs$permInvariant))
   }
 })
 

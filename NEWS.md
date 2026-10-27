@@ -10,6 +10,12 @@
   `OMP_THREAD_LIMIT`, so CRAN no longer sees "OMP: Warning #96: Cannot
   form a team" (#3).
 
+* The `bobyqa()`/`newuoa()` vs. 'minqa' comparison tests compare the
+  permutation-invariant chebyquad solutions as a set on platforms without
+  bitwise agreement, fixing a test failure on CRAN's linux-arm64 check
+  where the FMA-contracted 'minqa' build reached the same minimum with two
+  coordinates swapped.
+
 # RcppTrust 0.2.0
 
 * The package license is now GPL-2, because the BOBYQA/NEWUOA ports and
