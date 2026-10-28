@@ -15,6 +15,9 @@
   bitwise agreement, fixing a test failure on CRAN's linux-arm64 check
   where the FMA-contracted 'minqa' build reached the same minimum with two
   coordinates swapped.
+* The NEWUOA `ierr = 3` test is skipped when R lacks long double support,
+  since its rounding path depends on `sum()` accumulating in long double
+  (CRAN's noLD check).
 
 # RcppTrust 0.2.0
 
