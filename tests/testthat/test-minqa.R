@@ -180,17 +180,24 @@ test_that("NEWUOA's BIGDEN safeguard path matches minqa", {
 test_that("BOBYQA's RESCUE path runs deterministically", {
   # A Hilbert-matrix quadratic with a tiny rhoend enters RESCUE, where minqa
   # 1.2.8 itself evaluates uninitialized memory, so there is no minqa
-  # reference: the port must converge and repeat exactly.
+  # reference: the port must converge and repeat exactly. The objective
+  # avoids BLAS (`%*%`), whose CPU-dependent kernels changed which exit the
+  # run took between CI machines (and so the coverage of the
+  # cancellation exit). On x86_64, n = 7 ends at the "too much
+  # cancellation" exit and n = 8 takes the other RESCUE re-entries.
   hilb <- function(x) {
     n <- length(x)
-    drop(x %*% (1 / (outer(0:(n - 1), 0:(n - 1), "+") + 1)) %*% x)
+    sum(outer(x, x) / (outer(0:(n - 1), 0:(n - 1), "+") + 1))
   }
-  ctrl <- list(npt = 36, rhobeg = 0.5, rhoend = 1e-10, maxfun = 20000)
-  a <- suppressWarnings(bobyqa(rep(1, 7), hilb, -2, 2, control = ctrl))
-  b <- suppressWarnings(bobyqa(rep(1, 7), hilb, -2, 2, control = ctrl))
-  expect_identical(a, b)
-  expect_true(a$ierr %in% c(0, 3, 5))
-  expect_lt(a$fval, 1e-4)
+  for (n in 7:8) {
+    ctrl <- list(npt = (n + 1) * (n + 2) / 2, rhobeg = 0.5, rhoend = 1e-10,
+                 maxfun = 20000)
+    a <- suppressWarnings(bobyqa(rep(1, n), hilb, -2, 2, control = ctrl))
+    b <- suppressWarnings(bobyqa(rep(1, n), hilb, -2, 2, control = ctrl))
+    expect_identical(a, b)
+    expect_true(a$ierr %in% c(0, 3, 5))
+    expect_lt(a$fval, 1e-4)
+  }
 })
 
 test_that("minqa R wrapper argument handling", {
