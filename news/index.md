@@ -16,6 +16,11 @@
   [\#96](https://github.com/nlmixr2/RcppTrust/issues/96): Cannot form a
   team” ([\#3](https://github.com/nlmixr2/RcppTrust/issues/3)).
 
+- The NEWUOA `ierr = 3` test is skipped when R lacks long double
+  support, since its rounding path depends on
+  [`sum()`](https://rdrr.io/r/base/sum.html) accumulating in long double
+  (CRAN’s noLD check).
+
 ## RcppTrust 0.2.0
 
 CRAN release: 2026-10-27
