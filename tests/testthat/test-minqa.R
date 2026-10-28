@@ -195,9 +195,11 @@ test_that("minqa R wrapper argument handling", {
                  "adjusted to nearest bound")
   expect_output(bobyqa(c(1, 2), fr, 0, 4, control = list(iprint = 7)),
                 "At return")
-  if (bitwise) {
+  if (bitwise && isTRUE(capabilities("long.double"))) {
     # An unbounded linear objective ends in the ierr = 3 exit only through
-    # rounding at huge magnitudes, which is x86_64-specific.
+    # rounding at huge magnitudes, which is x86_64-specific and depends on
+    # sum() accumulating in long double (not so on a --disable-long-double
+    # build, e.g. CRAN's noLD check).
     r <- newuoa(c(1, 1, 1), function(x) sum(x), control = list(npt = 5))
     expect_equal(r$ierr, 3)
     expect_match(r$msg, "failed to reduce q")
