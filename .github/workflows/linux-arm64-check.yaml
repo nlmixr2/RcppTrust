@@ -1,0 +1,56 @@
+# Mirrors CRAN's linux-arm64 special check
+# (https://github.com/r-devel/linux-arm64-checks): arm64 runner, rcheckserver
+# container (CRAN Debian system libraries), Suggests such as 'minqa' built
+# from source with that toolchain.
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+name: linux-arm64-check.yaml
+
+permissions: read-all
+
+jobs:
+  linux-arm64:
+    name: ubuntu-24.04-arm (rcheckserver)
+    runs-on: ubuntu-24.04-arm
+    container:
+      image: ghcr.io/r-devel/rcheckserver/ubuntu:latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        timeout-minutes: 90
+        run: |
+          install.packages("remotes")
+          remotes::install_deps(dependencies = TRUE, upgrade = "never")
+        shell: Rscript {0}
+
+      - name: Build package
+        timeout-minutes: 30
+        run: R CMD build --no-build-vignettes --no-manual .
+        shell: bash
+
+      - name: Check package
+        timeout-minutes: 90
+        run: |
+          R CMD check RcppTrust_*.tar.gz --no-manual --ignore-vignettes || true
+          status=$(grep "^Status:" RcppTrust.Rcheck/00check.log)
+          echo "$status"
+          if [ -z "$status" ] || echo "$status" | grep -qE "WARNING|ERROR"; then
+            exit 1
+          fi
+        shell: bash
+        env:
+          _R_CHECK_FORCE_SUGGESTS_: false
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: linux-arm64-check
+          path: |
+            RcppTrust.Rcheck/*.log
+            RcppTrust.Rcheck/tests

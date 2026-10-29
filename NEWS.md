@@ -10,6 +10,11 @@
   `OMP_THREAD_LIMIT`, so CRAN no longer sees "OMP: Warning #96: Cannot
   form a team" (#3).
 
+* The `bobyqa()`/`newuoa()` vs. 'minqa' comparison tests compare the
+  permutation-invariant chebyquad solutions as a set on platforms without
+  bitwise agreement, fixing a test failure on CRAN's linux-arm64 check
+  where the FMA-contracted 'minqa' build reached the same minimum with two
+  coordinates swapped.
 * The NEWUOA `ierr = 3` test is skipped when R lacks long double support,
   since its rounding path depends on `sum()` accumulating in long double
   (CRAN's noLD check).
