@@ -16,6 +16,14 @@
   [\#96](https://github.com/nlmixr2/RcppTrust/issues/96): Cannot form a
   team” ([\#3](https://github.com/nlmixr2/RcppTrust/issues/3)).
 
+- The
+  [`bobyqa()`](../reference/bobyqa.md)/[`newuoa()`](../reference/newuoa.md)
+  vs. ‘minqa’ comparison tests compare the permutation-invariant
+  chebyquad solutions as a set on platforms without bitwise agreement,
+  fixing a test failure on CRAN’s linux-arm64 check where the
+  FMA-contracted ‘minqa’ build reached the same minimum with two
+  coordinates swapped.
+
 - The NEWUOA `ierr = 3` test is skipped when R lacks long double
   support, since its rounding path depends on
   [`sum()`](https://rdrr.io/r/base/sum.html) accumulating in long double
