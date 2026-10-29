@@ -2,6 +2,7 @@ src/*.o
 src/*.so
 src/*.dll
 src/symbols.rds
+.vexp/
 *.Rcheck/
 *.tar.gz
 .Rhistory
