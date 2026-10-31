@@ -2,10 +2,15 @@
 # (https://github.com/r-devel/linux-arm64-checks): arm64 runner, rcheckserver
 # container (CRAN Debian system libraries), Suggests such as 'minqa' built
 # from source with that toolchain.
+# Stacked PRs (based on another PR's branch) skip CI; a PR runs once it
+# targets main, including when it is retargeted there (edited, base
+# changed).  Other PR edits start a run whose jobs are all skipped.
 on:
   push:
     branches: [main, master]
   pull_request:
+    branches: [main, master]
+    types: [opened, synchronize, reopened, edited]
   workflow_dispatch:
 
 name: linux-arm64-check.yaml
@@ -14,6 +19,7 @@ permissions: read-all
 
 jobs:
   linux-arm64:
+    if: github.event_name != 'pull_request' || github.event.action != 'edited' || github.event.changes.base
     name: ubuntu-24.04-arm (rcheckserver)
     runs-on: ubuntu-24.04-arm
     container:
