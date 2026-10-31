@@ -2,6 +2,8 @@
 
 ## RcppTrust 0.2.1
 
+CRAN release: 2026-10-31
+
 - Errors raised inside the R callbacks of
   [`bobyqa()`](../reference/bobyqa.md),
   [`newuoa()`](../reference/newuoa.md) and
